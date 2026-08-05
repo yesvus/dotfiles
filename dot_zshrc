@@ -13,8 +13,31 @@ HISTSIZE=10000
 SAVEHIST=10000
 
 setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
 setopt SHARE_HISTORY
 setopt AUTO_CD
+
+bindkey -e
+
+# Fast navigation and fuzzy history/file selection when available.
+if (( $+commands[zoxide] )); then
+  eval "$(zoxide init zsh)"
+fi
+
+if (( $+commands[fzf] )); then
+  source <(fzf --zsh)
+fi
+
+# Convenience commands that leave standard Unix commands unchanged.
+if (( $+commands[eza] )); then
+  alias ll='eza --long --all --group-directories-first --git'
+  alias lt='eza --tree --level=2 --group-directories-first'
+fi
+
+if (( $+commands[bat] )); then
+  alias bcat='bat --paging=never'
+fi
 
 PROMPT='%F{green}%n@%m%f %F{blue}%~%f %# '
 
