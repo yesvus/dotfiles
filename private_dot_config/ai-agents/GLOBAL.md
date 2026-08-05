@@ -3,6 +3,7 @@
 - Read project instructions and inspect the existing component library, design tokens, and nearby UI before editing. Project-specific rules override this file.
 - Reuse and compose existing components before creating a new component or primitive. Do not introduce a second UI or styling system into an established project.
 - In a project with `components.json`, use the shadcn skill, inspect installed components, and check shadcn documentation or registries before writing custom UI.
+- Do not keep a shadcn MCP server running globally. Invoke the shadcn CLI on demand with `pnpm dlx shadcn@latest` when a project needs it.
 - For a new React project without a design system, prefer shadcn/ui. Do not replace an existing design system with shadcn without explicit approval.
 - Preserve the product's visual language. Avoid generic AI defaults such as decorative eyebrows, purple gradients, interchangeable card grids, excessive rounding, meaningless statistics, and filler copy unless the brief genuinely calls for them.
 - Prioritize clear information hierarchy, useful interaction states, responsive mobile behavior, keyboard access, visible focus, readable contrast, and reduced-motion support.
