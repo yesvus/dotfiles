@@ -1,0 +1,7 @@
+# Ghostty Configuration
+
+# Font size (reduced default zoom level)
+font-size = 10.5
+
+# Theme
+theme = dark:Atom One Dark,light:Atom One Light

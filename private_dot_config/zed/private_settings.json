@@ -1,0 +1,50 @@
+{
+  "git_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "sandbox_permissions": {
+      "allow_unsandboxed": true
+    },
+    "default_model": {
+      "provider": "openai-subscribed",
+      "model": "gpt-5.6-luna",
+      "enable_thinking": true,
+      "effort": "medium"
+    },
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "base_keymap": "VSCode",
+  "project_panel": {
+    "dock": "left"
+  },
+  "buffer_font_family": ".ZedMono",
+  "ui_font_size": 16,
+  "buffer_font_size": 15,
+  "minimap": {
+    "show": "always"
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+    "anthropic_retention": false
+  },
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    },
+    "codex-acp": {
+      "type": "registry"
+    },
+    "github-copilot-cli": {
+      "type": "registry"
+    }
+  },
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "One Dark"
+  }
+}

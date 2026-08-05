@@ -1,0 +1,26 @@
+
+. "$HOME/.local/bin/env"
+
+# Added by Antigravity CLI installer
+export PATH="$HOME/.local/bin:$PATH"
+
+# Lightweight interactive setup: built-in completion and persistent history.
+autoload -Uz compinit
+compinit
+
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+
+setopt HIST_IGNORE_DUPS
+setopt SHARE_HISTORY
+setopt AUTO_CD
+
+PROMPT='%F{green}%n@%m%f %F{blue}%~%f %# '
+
+# Docker is disabled at boot to save resources. Start it only when needed.
+docker-start() { sudo systemctl start docker.service; }
+docker-stop() { sudo systemctl stop docker.service docker.socket containerd.service; }
+
+# Isolated alternate Codex account with separate auth and sessions.
+codex-alt() { CODEX_HOME="$HOME/.codex-alt" command codex "$@"; }
