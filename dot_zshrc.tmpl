@@ -41,9 +41,44 @@ fi
 
 PROMPT='%F{green}%n@%m%f %F{blue}%~%f %# '
 
+{{ if eq .chezmoi.os "linux" -}}
 # Docker is disabled at boot to save resources. Start it only when needed.
 docker-start() { sudo systemctl start docker.service; }
 docker-stop() { sudo systemctl stop docker.service docker.socket containerd.service; }
-
+{{ end }}
 # Isolated alternate Codex account with separate auth and sessions.
 codex-alt() { CODEX_HOME="$HOME/.codex-alt" command codex "$@"; }
+
+npm() {
+  case "$1" in
+    install|i|add|uninstall|remove|rm|update|up)
+      print -u2 "Blocked: use pnpm instead of npm to avoid duplicate dependency trees."
+      print -u2 "Try: pnpm $*"
+      return 1
+      ;;
+    exec|x)
+      shift
+      command pnpm dlx "$@"
+      ;;
+    *)
+      command npm "$@"
+      ;;
+  esac
+}
+
+npx() {
+  command pnpm dlx "$@"
+}
+
+yarn() {
+  case "$1" in
+    install|add|upgrade|up|remove|rm)
+      print -u2 "Blocked: use pnpm instead of yarn to avoid duplicate dependency trees."
+      print -u2 "Try: pnpm $*"
+      return 1
+      ;;
+    *)
+      command yarn "$@"
+      ;;
+  esac
+}
