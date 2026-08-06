@@ -1,5 +1,6 @@
 {
   "git_panel": {
+    "tree_view": true,
     "dock": "left"
   },
   "agent": {
@@ -20,9 +21,11 @@
   "project_panel": {
     "dock": "left"
   },
-  "buffer_font_family": ".ZedMono",
-  "ui_font_size": 16,
-  "buffer_font_size": 15,
+  "ui_font_size": 15,
+  "buffer_font_size": 13.5,
+  "terminal": {
+    "font_size": 15
+  },
   "minimap": {
     "show": "always"
   },
@@ -45,7 +48,7 @@
   "theme": {
     "mode": "system",
     "light": "One Light",
-    "dark": "One Dark"
+    "dark": "VSCode Dark Modern"
   },
   "soft_wrap": "editor_width"
 }
