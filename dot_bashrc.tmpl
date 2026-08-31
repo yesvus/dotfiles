@@ -1,0 +1,70 @@
+#
+# ~/.bashrc  (managed by chezmoi)
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+
+# --- colors ---
+alias ll='ls -lah --color=auto'
+alias diff='diff --color=auto'
+{{ if eq .chezmoi.os "linux" -}}
+alias ip='ip -color=auto'
+{{ end -}}
+export LESS='-R'
+export MANPAGER="less -R --use-color -Dd+r -Du+b"
+export GREP_COLORS='mt=01;31'
+
+# One Dark colored prompt
+if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+    color_prompt=yes
+else
+    color_prompt=
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\w\[\033[00m\] \[\033[00;37m\]\$\[\033[00m\] '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
+# Add ~/.local/bin to PATH if not already present
+case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+
+# One Dark palette + truecolor on the bare Linux console (TTY)
+# Skip entirely when inside fbterm — it has its own palette (fbtermrc)
+# and its own private color escape sequences, incompatible with console OSC P.
+if [ -n "$FBTERM" ]; then
+    export TERM=fbterm
+elif [ "$TERM" = "linux" ]; then
+    echo -en "\e]P0282c34\e]P1e06c75\e]P298c379\e]P3e5c07b\e]P461afef\e]P5c678dd\e]P656b6c2\e]P7abb2bf"
+    echo -en "\e]P8545862\e]P9e06c75\e]PA98c379\e]PBe5c07b\e]PC61afef\e]PDc678dd\e]PE56b6c2\e]PFffffff"
+    export TERM=xterm-256color
+    clear
+fi
+
+# UTF-8 locale for proper emoji/icon rendering in tmux/terminal
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+export COLORTERM=truecolor
+
+{{ if eq .chezmoi.os "darwin" -}}
+[ -f /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+{{ end -}}
