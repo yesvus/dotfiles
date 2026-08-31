@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+# onedark-client-setup - bring a *remote* machine's terminal in line with this host.
+#
+# Why this exists:
+#
+# Colors are pushed automatically over SSH by ~/.config/shell/onedark-term.sh
+# using OSC escape sequences, because those are in-band bytes the terminal
+# interprets live. The FONT is not in-band. The terminal emulator picks its font
+# from its own local config at startup, before it has read a single byte from
+# this host, and no mainstream emulator exposes a remote font-change protocol.
+# So the font genuinely cannot be forced from the server side; it has to be
+# installed and selected on the client. This script automates the client half.
+#
+# Usage, from the machine you are sitting at:
+#
+#   ssh <thishost> 'cat ~/.local/bin/onedark-client-setup' | bash
+#
+# or copy it over and run it. It installs JetBrainsMono Nerd Font for the
+# current user and patches the local terminal config to use it.
+
+set -euo pipefail
+
+FONT_NAME="JetBrainsMono Nerd Font Mono"
+NERD_VERSION="v3.2.1"
+ZIP_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_VERSION}/JetBrainsMono.zip"
+
+log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
+warn() { printf '\033[1;33m warn\033[0m %s\n' "$*" >&2; }
+
+have_font() {
+	command -v fc-list >/dev/null 2>&1 || return 1
+	fc-list 2>/dev/null | grep -qi 'JetBrainsMono Nerd Font'
+}
+
+install_font_linux() {
+	local dir="$HOME/.local/share/fonts/jetbrains-nerd"
+	mkdir -p "$dir"
+	local tmp
+	tmp=$(mktemp -d)
+	trap 'rm -rf "$tmp"' RETURN
+
+	log "downloading JetBrainsMono Nerd Font ${NERD_VERSION}"
+	if command -v curl >/dev/null 2>&1; then
+		curl -fLsS -o "$tmp/JetBrainsMono.zip" "$ZIP_URL"
+	elif command -v wget >/dev/null 2>&1; then
+		wget -qO "$tmp/JetBrainsMono.zip" "$ZIP_URL"
+	else
+		warn "need curl or wget to download the font"
+		return 1
+	fi
+
+	command -v unzip >/dev/null 2>&1 || { warn "need unzip"; return 1; }
+	unzip -qo "$tmp/JetBrainsMono.zip" -d "$tmp/extract"
+	# Mono variants keep glyphs single-width, which is what terminals want.
+	find "$tmp/extract" -name '*NerdFontMono*.ttf' -exec cp -f {} "$dir/" \;
+	# Fall back to the full set if the Mono naming ever changes upstream.
+	[ -n "$(ls -A "$dir" 2>/dev/null)" ] || find "$tmp/extract" -name '*.ttf' -exec cp -f {} "$dir/" \;
+
+	command -v fc-cache >/dev/null 2>&1 && fc-cache -f "$dir" >/dev/null 2>&1
+	log "installed into $dir"
+}
+
+install_font_macos() {
+	if command -v brew >/dev/null 2>&1; then
+		log "installing via Homebrew"
+		brew install --cask font-jetbrains-mono-nerd-font
+		return 0
+	fi
+	local dir="$HOME/Library/Fonts"
+	mkdir -p "$dir"
+	local tmp
+	tmp=$(mktemp -d)
+	trap 'rm -rf "$tmp"' RETURN
+	log "downloading JetBrainsMono Nerd Font ${NERD_VERSION}"
+	curl -fLsS -o "$tmp/JetBrainsMono.zip" "$ZIP_URL"
+	unzip -qo "$tmp/JetBrainsMono.zip" -d "$tmp/extract"
+	find "$tmp/extract" -name '*NerdFontMono*.ttf' -exec cp -f {} "$dir/" \;
+	log "installed into $dir"
+}
+
+# --- terminal config patching -------------------------------------------------
+# Each patcher is idempotent and only touches a config that already exists, so
+# running this never conjures configs for terminals the user doesn't use.
+
+patch_alacritty() {
+	local f
+	for f in "$HOME/.config/alacritty/alacritty.toml" "$HOME/.alacritty.toml"; do
+		[ -f "$f" ] || continue
+		grep -q 'JetBrainsMono Nerd Font' "$f" && { log "alacritty already set"; return; }
+		warn "alacritty config at $f does not use the font; add:"
+		printf '    [font]\n    normal = { family = "%s", style = "Medium" }\n' "$FONT_NAME"
+	done
+}
+
+patch_kitty() {
+	local f="$HOME/.config/kitty/kitty.conf"
+	[ -f "$f" ] || return 0
+	grep -q 'JetBrainsMono Nerd Font' "$f" && { log "kitty already set"; return; }
+	printf '\n# One Dark host font\nfont_family %s\n' "$FONT_NAME" >>"$f"
+	log "appended font_family to $f"
+}
+
+patch_foot() {
+	local f="$HOME/.config/foot/foot.ini"
+	[ -f "$f" ] || return 0
+	grep -q 'JetBrainsMono Nerd Font' "$f" && { log "foot already set"; return; }
+	warn "foot config exists; set under [main]:  font=$FONT_NAME:size=11"
+}
+
+patch_ghostty() {
+	local f="$HOME/.config/ghostty/config"
+	[ -f "$f" ] || return 0
+	grep -q 'JetBrainsMono Nerd Font' "$f" && { log "ghostty already set"; return; }
+	printf '\n# One Dark host font\nfont-family = %s\n' "$FONT_NAME" >>"$f"
+	log "appended font-family to $f"
+}
+
+main() {
+	if have_font; then
+		log "JetBrainsMono Nerd Font already installed"
+	else
+		case "$(uname -s)" in
+		Darwin) install_font_macos ;;
+		Linux) install_font_linux ;;
+		*) warn "unsupported OS: $(uname -s); install the font manually" ;;
+		esac
+	fi
+
+	patch_alacritty
+	patch_kitty
+	patch_foot
+	patch_ghostty
+
+	cat <<EOF
+
+Done. Restart your terminal so it picks up the new font.
+Colors are applied automatically on login, no client config needed.
+EOF
+}
+
+main "$@"

@@ -41,6 +41,13 @@ fi
 
 PROMPT='%F{green}%n@%m%f %F{blue}%~%f %# '
 
+# Force the One Dark palette onto the attached terminal via OSC escapes, so
+# SSH clients from other machines render this host in One Dark regardless of
+# their own theme. Fonts cannot be pushed this way; see the file's header.
+if [[ -r "$HOME/.config/shell/onedark-term.sh" ]]; then
+  emulate sh -c '. "$HOME/.config/shell/onedark-term.sh"'
+fi
+
 {{ if eq .chezmoi.os "linux" -}}
 # Docker is disabled at boot to save resources. Start it only when needed.
 docker-start() { sudo systemctl start docker.service; }

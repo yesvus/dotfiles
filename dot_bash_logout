@@ -1,0 +1,11 @@
+#
+# ~/.bash_logout
+#
+
+# Hand the client's terminal back its own colors. ~/.bashrc forces the One Dark
+# palette via OSC escapes, which persist in the emulator after the session ends,
+# so an SSH client that doesn't restore here would stay One Dark forever.
+if [ -r "$HOME/.config/shell/onedark-term.sh" ]; then
+	ONEDARK_LIB_ONLY=1 . "$HOME/.config/shell/onedark-term.sh" >/dev/null 2>&1
+	onedark_reset_palette 2>/dev/null
+fi
