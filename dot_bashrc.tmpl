@@ -59,9 +59,20 @@ elif [ "$TERM" = "linux" ]; then
     clear
 fi
 
-# UTF-8 locale for proper emoji/icon rendering in tmux/terminal
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+# UTF-8 locale for proper emoji/icon rendering in tmux/terminal.
+# Only set LANG/LC_ALL to a locale actually installed on this machine —
+# forcing en_US.UTF-8 on a host that never generated it breaks every
+# shell (including ones opened over SSH from a machine that forwards
+# LANG/LC_ALL) with "cannot change locale" warnings.
+if command -v locale >/dev/null 2>&1; then
+    if locale -a 2>/dev/null | grep -qiE '^en_US\.utf-?8$'; then
+        export LANG=en_US.UTF-8
+        export LC_ALL=en_US.UTF-8
+    elif locale -a 2>/dev/null | grep -qiE '^C\.utf-?8$'; then
+        export LANG=C.UTF-8
+        export LC_ALL=C.UTF-8
+    fi
+fi
 
 export COLORTERM=truecolor
 
