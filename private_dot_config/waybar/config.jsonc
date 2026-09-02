@@ -1,0 +1,138 @@
+{
+    "layer": "top",
+    "position": "top",
+    // Tall enough to fit the 2-row performance group; other single-line
+    // modules just center vertically within the extra room.
+    "height": 24,
+    "spacing": 0,
+
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-center": ["sway/window"],
+    "modules-right": [
+        "group/performance",
+        "group/connectivity",
+        "pulseaudio",
+        "group/lighting",
+        "custom/battery",
+        "clock"
+    ],
+
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": false
+    },
+    "sway/mode": {
+        "format": "  {}  "
+    },
+    "sway/window": {
+        "format": "{title}",
+        "max-length": 60
+    },
+
+    // Two columns, two rows: cpu/memory stacked in one column, disk/temp in
+    // the other, so the whole group stays narrow instead of running wide.
+    "group/performance": {
+        "orientation": "horizontal",
+        "modules": ["group/perf-col1", "group/perf-col2"]
+    },
+    "group/perf-col1": {
+        "orientation": "vertical",
+        "modules": ["cpu", "memory"]
+    },
+    "group/perf-col2": {
+        "orientation": "vertical",
+        "modules": ["disk", "temperature"]
+    },
+    "cpu": {
+        "interval": 2,
+        "format": "󰌓{usage}%",
+        "on-click": "foot --app-id=btop-float -e btop"
+    },
+    "memory": {
+        "format": "󰍛{percentage}%",
+        "on-click": "foot --app-id=btop-float -e btop"
+    },
+    "disk": {
+        // Root is backed by the machine's NVMe drive; show used space.
+        "path": "/",
+        "interval": 60,
+        "format": "󰋊{percentage_used}%",
+        "on-click": "foot --app-id=btop-float -e btop"
+    },
+    "temperature": {
+        "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
+        "critical-threshold": 90,
+        "format": "󰔏{temperatureC}°",
+        "on-click": "foot --app-id=btop-float -e btop"
+    },
+
+    // Network icon + tray (nm-applet's own network entry, etc.) sharing one
+    // block, since they're both connectivity-related.
+    "group/connectivity": {
+        "orientation": "horizontal",
+        "modules": ["network", "tray"]
+    },
+    // No "interface" pinned: waybar follows the default route, so this
+    // switches automatically between the wifi and ethernet formats below
+    // depending on which is actually up. Icon only -- hover for details.
+    "network": {
+        "format-wifi": "󰖩",
+        "format-ethernet": "",
+        "format-disconnected": "󰖪",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%) -- {ifname}: {ipaddr}/{cidr}",
+        "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr}",
+        "tooltip-format-disconnected": "Disconnected",
+        "on-click": "nm-connection-editor"
+    },
+    "tray": {
+        "icon-size": 15,
+        "spacing": 8
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰖁 muted",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        // Waybar's own scroll step, separate from the wpctl keybinds in sway
+        // config (both now move volume by 5%, not the 1% default).
+        "scroll-step": 5,
+        "on-click": "pavucontrol"
+    },
+    // Night light + brightness share one block: both are "light" controls.
+    "group/lighting": {
+        "orientation": "horizontal",
+        "modules": ["custom/nightlight", "custom/brightness-ddc"]
+    },
+    "custom/brightness-ddc": {
+        "exec": "sway-brightness-ddc show",
+        "interval": 1,
+        "format": "󰃟 {}%",
+        "on-click": "sway-brightness-ddc bump +5",
+        "on-click-right": "sway-brightness-ddc bump -5",
+        "on-scroll-up": "sway-brightness-ddc bump +5",
+        "on-scroll-down": "sway-brightness-ddc bump -5"
+    },
+    // Static button: click toggles wlsunset's forced day/night state (same
+    // USR1 signal as $mod+Shift+n).
+    "custom/nightlight": {
+        "format": "󰖔",
+        "tooltip-format": "Toggle night light (wlsunset)",
+        "on-click": "pkill -USR1 -x wlsunset"
+    },
+    // Custom instead of the built-in battery module: hide-when-empty lets
+    // waybar-battery collapse this widget away entirely while on AC, instead
+    // of always showing a percentage that isn't relevant when plugged in.
+    "custom/battery": {
+        "exec": "waybar-battery",
+        "interval": 30,
+        "return-type": "json",
+        "hide-when-empty": true
+    },
+
+    "clock": {
+        "interval": 1,
+        "format": "{:%a %b %d, %H:%M:%S}"
+    }
+}

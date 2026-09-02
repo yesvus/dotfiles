@@ -1,0 +1,440 @@
+# Default config for sway
+#
+# Copy this to ~/.config/sway/config and edit it to your liking.
+#
+# Read `man 5 sway` for a complete reference.
+
+### Variables
+#
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+# Your preferred terminal emulator
+set $term foot
+# Your preferred application launcher
+#
+# bemenu: dmenu-style, keyboard-only, native Wayland layer-shell client.
+# Shared look-and-feel, reused by every bemenu-driven binding below.
+# Colors match the client.* / bar palette further down this file.
+# Selenized-black gray, matching the bar/titlebars instead of the old
+# Selenized-dark blue.
+set $bemenu_theme --ignorecase --wrap --no-overlap \
+    --fn "JetBrainsMono Nerd Font Mono Bold 10" \
+    --line-height 20 --border 0 --border-radius 0 \
+    --tb "#181818" --tf "#dedede" \
+    --fb "#181818" --ff "#dedede" \
+    --nb "#181818" --nf "#777777" \
+    --hb "#3b3b3b" --hf "#4695f7" \
+    --sb "#3b3b3b" --sf "#4695f7" \
+    --ab "#181818" --af "#777777" \
+    --cb "#181818" --cf "#dedede" \
+    --scb "#252525" --scf "#3b3b3b" \
+    --bdr "#181818"
+
+# $mod+d: launch an application.
+# fuzzel is a native floating launcher (centered, rounded corners) that reads
+# .desktop entries itself, replacing the old bemenu+j4-dmenu-desktop combo.
+set $menu fuzzel
+
+# $mod+Shift+d: jump to an already-open window by name.
+set $window_switcher env BEMENU_BACKEND=wayland ~/.local/bin/sway-window-switcher
+
+### Output configuration
+#
+# Solid background: darker than the bar's gray so the two read as distinct
+# surfaces, without introducing a different hue.
+output * bg "#0d0d0d" solid_color
+
+# ViewSonic VX3276-FHD: SDR is brighter and better suited to desktop work.
+output HDMI-A-1 mode 1920x1080@74.973Hz scale 1 subpixel rgb
+output HDMI-A-1 {
+    hdr off
+    subpixel rgb
+}
+
+
+#
+# Example configuration:
+#
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+
+### Idle configuration
+#
+# Example configuration:
+#
+# exec swayidle -w \
+#          timeout 300 'swaylock -f -c 000000' \
+#          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+#          before-sleep 'swaylock -f -c 000000'
+#
+# This will lock your screen after 300 seconds of inactivity, then turn off
+# your displays after another 300 seconds, and turn your screens back on when
+# resumed. It will also lock your screen before your computer goes to sleep.
+
+### Input configuration
+#
+# Example configuration:
+#
+#   input type:touchpad {
+#       dwt enabled
+#       tap enabled
+#       natural_scroll enabled
+#       middle_emulation enabled
+#   }
+#
+#   input type:keyboard {
+#       xkb_layout "eu"
+#   }
+#
+# You can also configure each device individually.
+# Read `man 5 sway-input` for more information about this section.
+
+### Key bindings
+#
+# Basics:
+#
+    # Start a terminal
+    bindsym $mod+Return exec $term
+
+    # Kill focused window
+    bindsym $mod+q kill
+    # Start your launcher
+    bindsym $mod+d exec $menu
+
+    # Fuzzy-jump to any open window by name
+    bindsym $mod+Shift+d exec $window_switcher
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod normal
+
+    # Reload the configuration file
+    bindsym $mod+Shift+c reload
+
+    # Exit sway (logs you out of your Wayland session)
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit' \
+        --background 103c48 --text adbcbc --border 4695f7 --border-bottom-size 0 \
+        --button-background 184956 --button-text cad8d9
+
+    # Performance monitor (like Windows' Ctrl+Shift+Esc task manager)
+    bindsym $mod+Shift+Escape exec $term -e btop
+#
+# Moving around:
+#
+    # Move your focus around
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+    # Or use $mod+[up|down|left|right]
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    # Move the focused window with the same, but add Shift
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+    # Ditto, with arrow keys
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+#
+# Workspaces:
+#
+    # Switch to workspace
+    bindsym $mod+1 workspace number 1
+    bindsym $mod+2 workspace number 2
+    bindsym $mod+3 workspace number 3
+    bindsym $mod+4 workspace number 4
+    bindsym $mod+5 workspace number 5
+    bindsym $mod+6 workspace number 6
+    bindsym $mod+7 workspace number 7
+    bindsym $mod+8 workspace number 8
+    bindsym $mod+9 workspace number 9
+    bindsym $mod+0 workspace number 10
+    # Move focused container to workspace
+    bindsym $mod+Shift+1 move container to workspace number 1
+    bindsym $mod+Shift+2 move container to workspace number 2
+    bindsym $mod+Shift+3 move container to workspace number 3
+    bindsym $mod+Shift+4 move container to workspace number 4
+    bindsym $mod+Shift+5 move container to workspace number 5
+    bindsym $mod+Shift+6 move container to workspace number 6
+    bindsym $mod+Shift+7 move container to workspace number 7
+    bindsym $mod+Shift+8 move container to workspace number 8
+    bindsym $mod+Shift+9 move container to workspace number 9
+    bindsym $mod+Shift+0 move container to workspace number 10
+    # Note: workspaces can have any name you want, not just numbers.
+    # We just use 1-10 as the default.
+#
+# Layout stuff:
+#
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    bindsym $mod+b splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles, unnecessary, disabled for now.
+#   bindsym $mod+s layout stacking
+#    bindsym $mod+w layout tabbed
+#    bindsym $mod+e layout toggle split
+
+    # Make the current focus fullscreen
+    bindsym $mod+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+Shift+space floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+space focus mode_toggle
+
+    # Move focus to the parent container
+    bindsym $mod+a focus parent
+#
+# Scratchpad:
+#
+    # Sway has a "scratchpad", which is a bag of holding for windows.
+    # You can send windows there and get them back later.
+
+    # Move the currently focused window to the scratchpad
+    bindsym $mod+Shift+minus move scratchpad
+
+    # Show the next scratchpad window or hide the focused scratchpad window.
+    # If there are multiple scratchpad windows, this command cycles through them.
+    bindsym $mod+minus scratchpad show
+#
+# Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # Ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+#
+# Utilities:
+#
+    # Special keys to adjust volume via PulseAudio
+    bindsym --locked XF86AudioMute exec wpctl set-mute \@DEFAULT_AUDIO_SINK@ toggle
+    bindsym --locked XF86AudioLowerVolume exec wpctl set-volume \@DEFAULT_AUDIO_SINK@ 5%-
+    bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 \@DEFAULT_AUDIO_SINK@ 5%+
+    bindsym --locked XF86AudioMicMute exec wpctl set-mute \@DEFAULT_AUDIO_SOURCE@ toggle
+
+    # Same volume controls, mapped to $mod combos since this keyboard has no XF86 media keys
+    bindsym --locked $mod+comma exec wpctl set-volume -l 1.0 \@DEFAULT_AUDIO_SINK@ 5%+
+    bindsym --locked $mod+period exec wpctl set-volume \@DEFAULT_AUDIO_SINK@ 5%-
+    bindsym --locked $mod+Shift+m exec wpctl set-mute \@DEFAULT_AUDIO_SINK@ toggle
+
+    # Open the sound control launched from swaybar as a centered popup.
+    # Match both native Wayland and XWayland pavucontrol windows.
+    for_window [app_id="org.pulseaudio.pavucontrol"] floating enable, resize set 700 500, move position center
+    for_window [class="Pavucontrol"] floating enable, resize set 700 500, move position center
+
+    # Same treatment for btop launched from the performance tray icons: foot
+    # is started with --app-id=btop-float specifically for this, so plain
+    # terminal windows aren't affected. Bigger than pavucontrol -- btop has a
+    # lot more to show (per-core graphs, process list, etc).
+    for_window [app_id="btop-float"] floating enable, resize set 1100 750, move position center
+
+    # Same treatment for the network editor launched from the waybar network
+    # icon.
+    for_window [app_id="nm-connection-editor"] floating enable, resize set 700 500, move position center
+
+    # Special keys to control media via playerctl
+    bindsym --locked XF86AudioPlay exec playerctl play-pause
+    bindsym --locked XF86AudioPause exec playerctl play-pause
+    bindsym --locked XF86AudioPrev exec playerctl previous
+    bindsym --locked XF86AudioNext exec playerctl next
+    bindsym --locked XF86AudioStop exec playerctl stop
+
+    # Special keys to adjust brightness via brightnessctl
+    # Control the display containing the focused workspace: DDC/CI for
+    # external monitors, kernel backlight for eDP.
+    bindsym --locked XF86MonBrightnessDown exec sway-brightness down
+    bindsym --locked XF86MonBrightnessUp exec sway-brightness up
+
+    # Same brightness controls, mapped to $mod combos since this keyboard has no XF86 media keys.
+    # NOTE: on this Turkish layout, Shift+comma produces the "semicolon"
+    # keysym, which collides with the jcode-managed "Mod4+semicolon" hotkey
+    # below (last binding in the file wins on a physical-key conflict), so
+    # brightness-down silently never fired. Brightness-up doesn't collide
+    # (nothing else claims Shift+period/colon), so it worked. Using
+    # $mod+Shift+b doesn't collide with anything else in this config.
+    bindsym --locked $mod+Shift+b exec sway-brightness down
+    bindsym --locked --to-code $mod+Shift+period exec sway-brightness up
+
+    # Special key to take a screenshot with grim
+# superseded by the managed block below
+#     bindsym Print exec grim
+
+#
+# Status Bar:
+#
+# Replaced the built-in swaybar (i3status-rs) with waybar: sway's bar has no
+# concept of a center zone, so a centered clock needs waybar's
+# modules-left/center/right layout instead. Config/style live in
+# ~/.config/waybar/. pkill+relaunch on every reload, same pattern as the
+# other exec_always entries below.
+exec_always "pkill -x waybar; waybar"
+
+include /etc/sway/config.d/*
+
+input type:keyboard {
+    xkb_layout tr
+}
+
+# Currently unused: pixel borders draw no title text, and waybar has its own
+# font-family in style.css. Left set in case title bars come back later.
+font pango:JetBrainsMono Nerd Font Mono 9
+
+# >>> jcode launch hotkeys (managed) >>>
+# jcode: home
+bindsym Mod4+semicolon exec --no-startup-id "/home/yesvus/.jcode/hotkey/launch_jcode_0_cmd_semicolon.sh"
+# jcode: last project
+bindsym Mod4+apostrophe exec --no-startup-id "/home/yesvus/.jcode/hotkey/launch_jcode_1_cmd_quote.sh"
+# jcode: self-dev
+bindsym Mod4+Shift+apostrophe exec --no-startup-id "/home/yesvus/.jcode/hotkey/launch_jcode_2_cmd_shift_quote.sh"
+# <<< jcode launch hotkeys (managed) <<<
+
+# >>> jcode desktop setup (managed) >>>
+### autostart
+exec mako
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec nm-applet --indicator
+# Tray icon with a click-to-open device/volume popover (waybar's own
+# pulseaudio module is just a text readout, not a menu).
+exec pasystray
+
+### night light
+# 6500K daytime, 4000K from 20:00 to 07:00, with 30-minute transitions.
+exec_always "pkill -x wlsunset; wlsunset -S 07:00 -s 20:00 -T 6500 -t 4000 -d 1800"
+# Cycle: forced daytime -> forced night -> automatic schedule.
+bindsym $mod+Shift+n exec pkill -USR1 -x wlsunset
+
+### idle and lock
+set $lock swaylock -f -c 282c34
+exec swayidle -w \
+    timeout 3600 '$lock; swaymsg "output * power off"' \
+        resume    'swaymsg "output * power on"'
+bindsym $mod+Shift+x exec $lock
+
+### clamshell mode
+# External monitor present: close lid -> disable eDP-1 and let Sway migrate its
+# workspaces. No external monitor: lock and suspend. Hotplug watcher prevents a
+# black/display-less session if HDMI is unplugged while the lid remains closed.
+bindswitch --locked --reload lid:on  exec sway-clamshell close
+bindswitch --locked --reload lid:off exec sway-clamshell open
+exec_always sway-clamshell-watch
+
+# This is an always-on deck workstation. Block every sleep operation while Sway
+# is running, including manual `systemctl suspend/hibernate` and lid handling.
+exec_always sway-no-sleep
+
+### touchpad
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+    dwt enabled
+    middle_emulation enabled
+    accel_profile adaptive
+}
+
+### screenshots (needs grim + slurp + wl-clipboard)
+# region to clipboard
+bindsym Print             exec grim -g "$(slurp)" - | wl-copy --type image/png
+# whole screen to ~/Pictures
+bindsym Shift+Print       exec grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png
+# region to file
+bindsym $mod+Print        exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png
+
+# NOTE: volume and brightness keys are already bound in the stock config above.
+# Re-binding them here would be a duplicate, which sway reports as a config
+# error, so they are deliberately not repeated.
+
+### looks
+# Full title bars (not just a border): gives a drag handle, so the machine
+# stays usable with just a mouse.
+#
+# NOTE on the close button: sway's own SSD titlebar (this "normal" border
+# mode) has no visual close/min/max button at all -- that's a sway/wlroots
+# limitation, not a config gap. GTK/Adwaita apps under Wayland normally draw
+# their own CSD (client-side decoration) with a real close button and
+# already look right; sway's titlebar only kicks in for windows that don't
+# draw their own (mostly Xwayland apps). As the closest mouse-only
+# equivalent, middle-click on any titlebar closes that window (see bindsym
+# below); $mod+q still works too.
+# Back to a plain pixel border, no title bar -- the "GTK-style close button
+# with a text title bar" experiment didn't land well; sway's own titlebar
+# can't draw a close button anyway (see git history if reviving this).
+default_border pixel 1
+default_floating_border pixel 1
+gaps inner 0
+gaps outer 0
+# Hide the accent border/corners when a single window has the workspace to
+# itself (with gaps at 0, there's nothing to distinguish it from) -- it only
+# shows once there's a second window to tell apart from.
+smart_borders on
+# Selenized-black gray, matching the bar/background instead of the old
+# Selenized-dark blue.
+client.focused          #4695f7 #181818 #dedede #4695f7 #4695f7
+client.focused_inactive #3b3b3b #252525 #b9b9b9 #3b3b3b #3b3b3b
+client.unfocused        #3b3b3b #181818 #777777 #3b3b3b #3b3b3b
+
+### system-wide dark mode
+# Linux has no single theme switch, so dark is asserted on two channels that
+# together cover every toolkit on this machine:
+#   1. dconf (below) -> read by the xdg-desktop-portal-gtk backend, which
+#      publishes org.freedesktop.appearance/color-scheme on D-Bus. GTK4 andi
+#      libadwaita, Firefox, Chromium and Electron follow this and nothing else.
+#      GTK3 on Wayland also reads these keys through its gsettings backend,
+#      and they outrank settings.ini, so the two must agree.
+#   2. ~/.config/gtk-{3,4}.0/settings.ini -> the fallback GTK reads directly at
+#      startup, covering the case where dconf or the portal is unavailable.
+# Adwaita's dark variant is built into GTK, so no theme package is needed.
+# gtk-theme stays "Adwaita", NOT "Adwaita-dark": the -dark suffix is a GTK4
+# theme name, and GTK3 has no such theme on disk, so setting it makes GTK3
+# silently fall back to light. Dark is requested via prefer-dark instead,
+# which both GTK3 and GTK4 understand.
+# GTK_THEME is deliberately not exported: it is a hard override that outranks
+# the portal and would stop apps from ever following a light/dark switch.
+set $gnome-schema org.gnome.desktop.interface
+exec_always {
+    gsettings set $gnome-schema color-scheme 'prefer-dark'
+    gsettings set $gnome-schema gtk-theme 'Adwaita'
+    gsettings set $gnome-schema icon-theme 'Adwaita'
+    gsettings set $gnome-schema cursor-theme 'breeze_cursors'
+    gsettings reset $gnome-schema cursor-size
+    gsettings set $gnome-schema font-antialiasing 'rgba'
+    gsettings set $gnome-schema font-hinting 'full'
+    gsettings set $gnome-schema font-rgba-order 'rgb'
+}
+seat seat0 xcursor_theme breeze_cursors
+# <<< jcode desktop setup (managed) <<<

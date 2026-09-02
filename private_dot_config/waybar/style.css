@@ -1,0 +1,194 @@
+/* Back to one font everywhere (JetBrainsMono Nerd Font Mono) -- the clock
+   stayed monospace for the no-jitter fix, and mixing it with Inter
+   elsewhere just looked inconsistent. */
+* {
+    font-family: "JetBrainsMono Nerd Font Mono";
+    font-weight: bold;
+    font-size: 9pt;
+    min-height: 0;
+    margin: 0;
+}
+
+window#waybar {
+    background-color: #181818;
+    color: #dedede;
+}
+
+/* GTK's default theme (Adwaita) draws buttons with rounded corners, a
+   border and a shadow. Strip all of that so #workspaces button is a flat
+   square instead of a pill. */
+button {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
+    background-image: none;
+    min-width: 0;
+}
+
+/* Flat, square blocks: padding only, no margin, no border-radius, so
+   widgets sit flush against each other with zero gap.
+   NOTE: a "group/foo" module's CSS node is #foo (the part after the slash),
+   NOT #group-foo -- that wrong prefix is why every group background was
+   silently failing to paint until now. */
+#workspaces button,
+#mode,
+#window,
+#performance,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#connectivity,
+#network,
+#tray,
+#pulseaudio,
+#lighting,
+#custom-brightness-ddc,
+#custom-nightlight,
+#custom-battery,
+#clock {
+    padding: 0 8px;
+    margin: 0;
+    border-radius: 0;
+}
+
+#workspaces button {
+    background-color: transparent;
+    color: #777777;
+}
+
+#workspaces button.focused {
+    background-color: #4695f7;
+    color: #181818;
+}
+
+#workspaces button.urgent {
+    background-color: #fa5750;
+    color: #181818;
+}
+
+#mode {
+    background-color: #dbb32d;
+    color: #181818;
+}
+
+#window {
+    background-color: transparent;
+    color: #b9b9b9;
+}
+
+/* Performance: 2 columns x 2 rows (cpu/memory, disk/temperature), sharing
+   one flat block so the group stays narrow. Small font + tight line
+   padding so each row is compact instead of oversized. */
+#performance {
+    background-color: #252525;
+    padding: 0;
+}
+
+#perf-col1,
+#perf-col2 {
+    padding: 0 2px;
+}
+
+#cpu,
+#memory,
+#disk,
+#temperature {
+    background-color: transparent;
+    padding: 0 4px;
+    font-size: 6pt;
+    min-height: 0;
+}
+
+#cpu {
+    color: #4695f7;
+}
+
+#memory {
+    color: #41c7b9;
+}
+
+#disk {
+    color: #af88eb;
+}
+
+#temperature {
+    color: #ed8649;
+}
+
+#temperature.critical {
+    color: #fa5750;
+}
+
+/* Bigger than the default -- an icon-only glyph needs more size than text
+   to actually read clearly at this bar height. */
+#network {
+    font-size: 12pt;
+    padding: 0 6px;
+}
+
+/* Volume: its own blue block, same size as everything else now. */
+#pulseaudio {
+    padding: 0 8px;
+    background-color: #4695f7;
+    color: #181818;
+}
+
+#pulseaudio.muted {
+    background-color: #3b3b3b;
+    color: #dedede;
+}
+
+/* Network icon + tray share one block (both connectivity-related). Neutral
+   gray instead of a color fill, so the icon reads soft/muted like the tray's
+   own monochrome network icon next to it, instead of standing out. */
+#connectivity {
+    background-color: #252525;
+}
+
+#network {
+    background-color: transparent;
+    color: #b9b9b9;
+}
+
+/* Differentiated by icon glyph (crossed-out wifi), not color. */
+#network.disconnected {
+    color: #777777;
+}
+
+#tray {
+    background-color: transparent;
+    padding: 0 6px 0 0;
+}
+
+/* Night light + brightness share one yellow block (both are light
+   controls). */
+#lighting {
+    background-color: #dbb32d;
+    padding: 0;
+}
+
+#custom-nightlight,
+#custom-brightness-ddc {
+    background-color: transparent;
+    color: #181818;
+}
+
+#custom-battery {
+    background-color: #75b938;
+    color: #181818;
+}
+
+#custom-battery.warning {
+    background-color: #dbb32d;
+}
+
+#custom-battery.critical {
+    background-color: #fa5750;
+}
+
+#clock {
+    background-color: #252525;
+    color: #dedede;
+}
