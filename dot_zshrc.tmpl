@@ -1,10 +1,10 @@
 
-. "$HOME/.local/bin/env"
 
 # Added by Antigravity CLI installer
 export PATH="$HOME/.local/bin:$PATH"
 
 # Lightweight interactive setup: built-in completion and persistent history.
+fpath+=/usr/share/zsh/plugins/zsh-completions/src
 autoload -Uz compinit
 compinit
 
@@ -18,74 +18,22 @@ setopt HIST_REDUCE_BLANKS
 setopt SHARE_HISTORY
 setopt AUTO_CD
 
-bindkey -e
+# --- Word navigation/deletion (Ctrl+Left/Right/Backspace/Delete) ---
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
+bindkey '^H' backward-delete-word     # Ctrl+Backspace
+bindkey '^[[3;5~' kill-word           # Ctrl+Delete
 
-# Fast navigation and fuzzy history/file selection when available.
-if (( $+commands[zoxide] )); then
-  eval "$(zoxide init zsh)"
-fi
+# --- Autosuggestions (ghost text) ---
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+bindkey '^ ' autosuggest-accept   # Ctrl+Space to accept ghost suggestion
 
-if (( $+commands[fzf] )) && [[ -o zle && -t 0 && -t 1 ]]; then
-  source <(fzf --zsh)
-fi
+# --- fzf keybindings + fuzzy completion (Ctrl+R, Ctrl+T, Alt+C) ---
+source /usr/share/fzf/key-bindings.zsh
+source /usr/share/fzf/completion.zsh
 
-# Convenience commands that leave standard Unix commands unchanged.
-if (( $+commands[eza] )); then
-  alias ll='eza --long --all --group-directories-first --git'
-  alias lt='eza --tree --level=2 --group-directories-first'
-fi
-
-if (( $+commands[bat] )); then
-  alias bcat='bat --paging=never'
-fi
+# --- Syntax highlighting (must be sourced LAST) ---
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 PROMPT='%F{green}%n@%m%f %F{blue}%~%f %# '
-
-# Force the One Dark palette onto the attached terminal via OSC escapes, so
-# SSH clients from other machines render this host in One Dark regardless of
-# their own theme. Fonts cannot be pushed this way; see the file's header.
-if [[ -r "$HOME/.config/shell/onedark-term.sh" ]]; then
-  emulate sh -c '. "$HOME/.config/shell/onedark-term.sh"'
-fi
-
-{{ if eq .chezmoi.os "linux" -}}
-# Docker is disabled at boot to save resources. Start it only when needed.
-docker-start() { sudo systemctl start docker.service; }
-docker-stop() { sudo systemctl stop docker.service docker.socket containerd.service; }
-{{ end }}
-# Isolated alternate Codex account with separate auth and sessions.
-codex-alt() { CODEX_HOME="$HOME/.codex-alt" command codex "$@"; }
-
-npm() {
-  case "$1" in
-    install|i|add|uninstall|remove|rm|update|up)
-      print -u2 "Blocked: use pnpm instead of npm to avoid duplicate dependency trees."
-      print -u2 "Try: pnpm $*"
-      return 1
-      ;;
-    exec|x)
-      shift
-      command pnpm dlx "$@"
-      ;;
-    *)
-      command npm "$@"
-      ;;
-  esac
-}
-
-npx() {
-  command pnpm dlx "$@"
-}
-
-yarn() {
-  case "$1" in
-    install|add|upgrade|up|remove|rm)
-      print -u2 "Blocked: use pnpm instead of yarn to avoid duplicate dependency trees."
-      print -u2 "Try: pnpm $*"
-      return 1
-      ;;
-    *)
-      command yarn "$@"
-      ;;
-  esac
-}
+export COLORTERM="truecolor"

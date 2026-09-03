@@ -2,7 +2,7 @@
    stayed monospace for the no-jitter fix, and mixing it with Inter
    elsewhere just looked inconsistent. */
 * {
-    font-family: "JetBrainsMono Nerd Font Mono";
+    font-family: "JetBrainsMono Nerd Font Mono", "Symbols Nerd Font Mono";
     font-weight: bold;
     font-size: 9pt;
     min-height: 0;
@@ -119,6 +119,49 @@ button {
 
 #temperature.critical {
     color: #fa5750;
+}
+
+/* Claude rate limits: same 2-row compact treatment as perf-col, colored
+   by budget remaining (green/yellow/red) instead of a fixed hue. Each row
+   is a pct module + a reset module glued together (no gap between them,
+   padding lives on the outer edges only) so "5h 78%(3h55m)" reads as one
+   unit instead of two separate blocks. */
+#claude {
+    background-color: #252525;
+    padding: 0;
+}
+
+#claude-5h,
+#claude-7d {
+    padding: 0;
+}
+
+#custom-claude-5h-pct,
+#custom-claude-7d-pct {
+    background-color: transparent;
+    padding: 0 0 0 4px;
+    font-size: 6pt;
+    min-height: 0;
+    color: #75b938;
+}
+
+#custom-claude-5h-pct.warning,
+#custom-claude-7d-pct.warning {
+    color: #dbb32d;
+}
+
+#custom-claude-5h-pct.critical,
+#custom-claude-7d-pct.critical {
+    color: #fa5750;
+}
+
+#custom-claude-5h-reset,
+#custom-claude-7d-reset {
+    background-color: transparent;
+    padding: 0 4px 0 3px;
+    font-size: 6pt;
+    min-height: 0;
+    color: #72898f;
 }
 
 /* Bigger than the default -- an icon-only glyph needs more size than text

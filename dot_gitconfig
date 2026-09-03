@@ -27,3 +27,6 @@
 [user]
 	name = yesvus
 	email = yesvus@gmail.com
+[credential "https://gitlab.com"]
+	helper = 
+	helper = !/usr/bin/glab auth git-credential

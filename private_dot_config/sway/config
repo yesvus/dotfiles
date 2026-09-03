@@ -103,7 +103,7 @@ output HDMI-A-1 {
     bindsym $mod+Return exec $term
 
     # Kill focused window
-    bindsym $mod+q kill
+    bindsym $mod+Shift+q kill
     # Start your launcher
     bindsym $mod+d exec $menu
 
@@ -127,6 +127,12 @@ output HDMI-A-1 {
 
     # Performance monitor (like Windows' Ctrl+Shift+Esc task manager)
     bindsym $mod+Shift+Escape exec $term -e btop
+
+    # Claude Code, always starting in $HOME regardless of sway's own cwd
+    bindsym $mod+c exec $term -D $HOME -e claude
+
+    # Firefox
+    bindsym $mod+w exec firefox
 #
 # Moving around:
 #
@@ -245,11 +251,11 @@ bindsym $mod+r mode "resize"
     # Special keys to adjust volume via PulseAudio
     bindsym --locked XF86AudioMute exec wpctl set-mute \@DEFAULT_AUDIO_SINK@ toggle
     bindsym --locked XF86AudioLowerVolume exec wpctl set-volume \@DEFAULT_AUDIO_SINK@ 5%-
-    bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 \@DEFAULT_AUDIO_SINK@ 5%+
+    bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1.5 \@DEFAULT_AUDIO_SINK@ 5%+
     bindsym --locked XF86AudioMicMute exec wpctl set-mute \@DEFAULT_AUDIO_SOURCE@ toggle
 
     # Same volume controls, mapped to $mod combos since this keyboard has no XF86 media keys
-    bindsym --locked $mod+comma exec wpctl set-volume -l 1.0 \@DEFAULT_AUDIO_SINK@ 5%+
+    bindsym --locked $mod+comma exec wpctl set-volume -l 1.5 \@DEFAULT_AUDIO_SINK@ 5%+
     bindsym --locked $mod+period exec wpctl set-volume \@DEFAULT_AUDIO_SINK@ 5%-
     bindsym --locked $mod+Shift+m exec wpctl set-mute \@DEFAULT_AUDIO_SINK@ toggle
 
@@ -309,6 +315,7 @@ include /etc/sway/config.d/*
 
 input type:keyboard {
     xkb_layout tr
+    xkb_numlock enabled
 }
 
 # Currently unused: pixel borders draw no title text, and waybar has its own
@@ -390,7 +397,7 @@ bindsym $mod+Print        exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +
 # already look right; sway's titlebar only kicks in for windows that don't
 # draw their own (mostly Xwayland apps). As the closest mouse-only
 # equivalent, middle-click on any titlebar closes that window (see bindsym
-# below); $mod+q still works too.
+# below); $mod+Shift+q still works too.
 # Back to a plain pixel border, no title bar -- the "GTK-style close button
 # with a text title bar" experiment didn't land well; sway's own titlebar
 # can't draw a close button anyway (see git history if reviving this).
