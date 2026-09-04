@@ -1,35 +1,68 @@
 # Ghostty Configuration
 
-# Font size (reduced default zoom level)
-font-size = 13.5
+# Font
+font-size = 10.5
+font-thicken = true
+
+# Window padding
+window-padding-x = 5
+window-padding-y = 5
+window-padding-balance = true
+
+# Disable GTK CSD headerbar (recommended for tiling WMs like Niri)
+window-decoration = false
 
 # Theme
 # Dark: exact One Dark palette from jelly's Alacritty config (~/.config/alacritty/alacritty.toml)
 # Light: Ghostty's built-in preset (jelly has no light variant to match)
 theme = light:Atom One Light,dark:Atom One Dark
 
-background = 282c34
-foreground = abb2bf
-cursor-color = 61afef
-cursor-text = 282c34
+# Skip the close-window confirmation prompt entirely (no dialog to tab through)
+confirm-close-surface = false
 
-palette = 0=#282c34
-palette = 1=#e06c75
-palette = 2=#98c379
-palette = 3=#e5c07b
-palette = 4=#61afef
-palette = 5=#c678dd
-palette = 6=#56b6c2
-palette = 7=#abb2bf
-palette = 8=#545862
-palette = 9=#e06c75
-palette = 10=#98c379
-palette = 11=#e5c07b
-palette = 12=#61afef
-palette = 13=#c678dd
-palette = 14=#56b6c2
-palette = 15=#ffffff
+# Reuse a single running ghostty process for new windows -> near-instant launch
+gtk-single-instance = true
 
-# Cursor
-cursor-style = bar
-cursor-style-blink = true
+# Niri handles all tiling/window management, so kill ghostty's native
+# split and tab features (and their keybinds) to avoid conflicts.
+window-show-tab-bar = never
+
+keybind = ctrl+shift+tab=unbind
+keybind = ctrl+tab=unbind
+keybind = ctrl+shift+w=unbind
+keybind = ctrl+shift+t=unbind
+keybind = ctrl+shift+arrow_left=unbind
+keybind = ctrl+shift+arrow_right=unbind
+keybind = ctrl+page_up=unbind
+keybind = ctrl+page_down=unbind
+keybind = alt+digit_1=unbind
+keybind = alt+1=unbind
+keybind = alt+digit_2=unbind
+keybind = alt+2=unbind
+keybind = alt+digit_3=unbind
+keybind = alt+3=unbind
+keybind = alt+digit_4=unbind
+keybind = alt+4=unbind
+keybind = alt+digit_5=unbind
+keybind = alt+5=unbind
+keybind = alt+digit_6=unbind
+keybind = alt+6=unbind
+keybind = alt+digit_7=unbind
+keybind = alt+7=unbind
+keybind = alt+digit_8=unbind
+keybind = alt+8=unbind
+keybind = alt+9=unbind
+
+keybind = ctrl+shift+o=unbind
+keybind = ctrl+shift+e=unbind
+keybind = super+ctrl+[=unbind
+keybind = super+ctrl+]=unbind
+keybind = ctrl+alt+arrow_up=unbind
+keybind = ctrl+alt+arrow_down=unbind
+keybind = ctrl+alt+arrow_left=unbind
+keybind = ctrl+alt+arrow_right=unbind
+keybind = super+ctrl+shift+arrow_up=unbind
+keybind = super+ctrl+shift+arrow_down=unbind
+keybind = super+ctrl+shift+arrow_left=unbind
+keybind = super+ctrl+shift+arrow_right=unbind
+keybind = ctrl+shift+enter=unbind

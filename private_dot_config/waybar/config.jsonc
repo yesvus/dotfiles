@@ -6,32 +6,345 @@
     "height": 26,
     "spacing": 0,
 
-    "modules-left": ["custom/archmenu", "custom/launcher", "group/workspacesview"],
-    "modules-center": ["clock"],
+    "modules-left": [
+        "custom/niri-daemon",
+        "custom/archmenu",
+        "custom/launcher",
+        "group/workspacesview",
+        "group/niritabs"
+    ],
+    "modules-center": [],
     "modules-right": [
         "group/claude",
         "group/performance",
         "group/connectivity",
         "pulseaudio",
         "group/lighting",
-        "custom/battery"
+        "custom/battery",
+        "clock"
     ],
 
-    // Workspace view icon + the workspace/window indicator, merged into one
-    // visual block.
+    // Workspace view icon + native niri workspaces indicator
     "group/workspacesview": {
         "orientation": "horizontal",
-        "modules": ["custom/overview", "custom/workspaces"]
+        "modules": ["custom/overview", "niri/workspaces"]
     },
-    // Event-driven workspace+window indicator (niri-workspaces-rs by
-    // 1jehuang -- github.com/1jehuang/niri-workspaces-rs). Each window is
-    // its own colored bar, app-aware; replaces the separate niri/workspaces
-    // + windowdots-script combo with one properly integrated view.
-    "custom/workspaces": {
-        "exec": "~/.config/waybar/niri-workspaces",
-        "return-type": "json",
-        "format": "{}",
+    "niri/workspaces": {
+        "format": "{index}",
+        "tooltip": false,
+        "on-scroll-up": "niri msg action focus-workspace-up",
+        "on-scroll-down": "niri msg action focus-workspace-down"
+    },
+
+    // Background daemon that keeps tab states fresh in /dev/shm/niri-tabs/
+    "custom/niri-daemon": {
+        "exec": "~/.config/waybar/niri-tab-daemon.py",
+        "format": "",
         "tooltip": false
+    },
+
+    // Interactive Firefox-style Niri workspace tabs (individual close buttons, < > pagination, overflow fade)
+    "group/niritabs": {
+        "orientation": "horizontal",
+        "spacing": 0,
+        "modules": [
+            "custom/page-prev",
+            "custom/fade-left",
+            "group/tab-0",
+            "group/tab-1",
+            "group/tab-2",
+            "group/tab-3",
+            "group/tab-4",
+            "group/tab-5",
+            "custom/fade-right",
+            "custom/page-next"
+        ]
+    },
+    "custom/page-prev": {
+        "exec": "cat /dev/shm/niri-tabs/page-prev.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh scroll-left",
+        "on-scroll-up": "~/.config/waybar/niri-tab-action.sh scroll-left",
+        "on-scroll-down": "~/.config/waybar/niri-tab-action.sh scroll-right"
+    },
+    "custom/fade-left": {
+        "exec": "cat /dev/shm/niri-tabs/fade-left.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh scroll-left",
+        "on-scroll-up": "~/.config/waybar/niri-tab-action.sh scroll-left",
+        "on-scroll-down": "~/.config/waybar/niri-tab-action.sh scroll-right"
+    },
+    "custom/fade-right": {
+        "exec": "cat /dev/shm/niri-tabs/fade-right.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh scroll-right",
+        "on-scroll-up": "~/.config/waybar/niri-tab-action.sh scroll-left",
+        "on-scroll-down": "~/.config/waybar/niri-tab-action.sh scroll-right"
+    },
+    "custom/page-next": {
+        "exec": "cat /dev/shm/niri-tabs/page-next.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh scroll-right",
+        "on-scroll-up": "~/.config/waybar/niri-tab-action.sh scroll-left",
+        "on-scroll-down": "~/.config/waybar/niri-tab-action.sh scroll-right"
+    },
+
+    // Slot 0
+    "group/tab-0": {
+        "orientation": "horizontal",
+        "modules": ["custom/tab-0", "custom/tab-maximize-0", "custom/tab-close-0"]
+    },
+    "custom/tab-0": {
+        "exec": "cat /dev/shm/niri-tabs/tab-0.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "align": 0.0,
+        "justify": "left",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh focus 0",
+        "on-double-click": "~/.config/waybar/niri-tab-action.sh maximize 0",
+        "on-click-middle": "~/.config/waybar/niri-tab-action.sh close 0",
+        "on-click-right": "~/.config/waybar/niri-tab-action.sh close 0",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-maximize-0": {
+        "exec": "cat /dev/shm/niri-tabs/tab-maximize-0.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh maximize 0",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-close-0": {
+        "exec": "cat /dev/shm/niri-tabs/tab-close-0.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh close 0",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+
+    // Slot 1
+    "group/tab-1": {
+        "orientation": "horizontal",
+        "modules": ["custom/tab-1", "custom/tab-maximize-1", "custom/tab-close-1"]
+    },
+    "custom/tab-1": {
+        "exec": "cat /dev/shm/niri-tabs/tab-1.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "align": 0.0,
+        "justify": "left",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh focus 1",
+        "on-double-click": "~/.config/waybar/niri-tab-action.sh maximize 1",
+        "on-click-middle": "~/.config/waybar/niri-tab-action.sh close 1",
+        "on-click-right": "~/.config/waybar/niri-tab-action.sh close 1",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-maximize-1": {
+        "exec": "cat /dev/shm/niri-tabs/tab-maximize-1.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh maximize 1",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-close-1": {
+        "exec": "cat /dev/shm/niri-tabs/tab-close-1.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh close 1",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+
+    // Slot 2
+    "group/tab-2": {
+        "orientation": "horizontal",
+        "modules": ["custom/tab-2", "custom/tab-maximize-2", "custom/tab-close-2"]
+    },
+    "custom/tab-2": {
+        "exec": "cat /dev/shm/niri-tabs/tab-2.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "align": 0.0,
+        "justify": "left",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh focus 2",
+        "on-double-click": "~/.config/waybar/niri-tab-action.sh maximize 2",
+        "on-click-middle": "~/.config/waybar/niri-tab-action.sh close 2",
+        "on-click-right": "~/.config/waybar/niri-tab-action.sh close 2",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-maximize-2": {
+        "exec": "cat /dev/shm/niri-tabs/tab-maximize-2.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh maximize 2",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-close-2": {
+        "exec": "cat /dev/shm/niri-tabs/tab-close-2.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh close 2",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+
+    // Slot 3
+    "group/tab-3": {
+        "orientation": "horizontal",
+        "modules": ["custom/tab-3", "custom/tab-maximize-3", "custom/tab-close-3"]
+    },
+    "custom/tab-3": {
+        "exec": "cat /dev/shm/niri-tabs/tab-3.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "align": 0.0,
+        "justify": "left",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh focus 3",
+        "on-double-click": "~/.config/waybar/niri-tab-action.sh maximize 3",
+        "on-click-middle": "~/.config/waybar/niri-tab-action.sh close 3",
+        "on-click-right": "~/.config/waybar/niri-tab-action.sh close 3",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-maximize-3": {
+        "exec": "cat /dev/shm/niri-tabs/tab-maximize-3.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh maximize 3",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-close-3": {
+        "exec": "cat /dev/shm/niri-tabs/tab-close-3.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh close 3",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+
+    // Slot 4
+    "group/tab-4": {
+        "orientation": "horizontal",
+        "modules": ["custom/tab-4", "custom/tab-maximize-4", "custom/tab-close-4"]
+    },
+    "custom/tab-4": {
+        "exec": "cat /dev/shm/niri-tabs/tab-4.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "align": 0.0,
+        "justify": "left",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh focus 4",
+        "on-double-click": "~/.config/waybar/niri-tab-action.sh maximize 4",
+        "on-click-middle": "~/.config/waybar/niri-tab-action.sh close 4",
+        "on-click-right": "~/.config/waybar/niri-tab-action.sh close 4",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-maximize-4": {
+        "exec": "cat /dev/shm/niri-tabs/tab-maximize-4.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh maximize 4",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-close-4": {
+        "exec": "cat /dev/shm/niri-tabs/tab-close-4.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh close 4",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+
+    // Slot 5
+    "group/tab-5": {
+        "orientation": "horizontal",
+        "modules": ["custom/tab-5", "custom/tab-maximize-5", "custom/tab-close-5"]
+    },
+    "custom/tab-5": {
+        "exec": "cat /dev/shm/niri-tabs/tab-5.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "align": 0.0,
+        "justify": "left",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh focus 5",
+        "on-double-click": "~/.config/waybar/niri-tab-action.sh maximize 5",
+        "on-click-middle": "~/.config/waybar/niri-tab-action.sh close 5",
+        "on-click-right": "~/.config/waybar/niri-tab-action.sh close 5",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-maximize-5": {
+        "exec": "cat /dev/shm/niri-tabs/tab-maximize-5.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh maximize 5",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
+    },
+    "custom/tab-close-5": {
+        "exec": "cat /dev/shm/niri-tabs/tab-close-5.json 2>/dev/null || true",
+        "return-type": "json",
+        "signal": 1,
+        "interval": "once",
+        "hide-empty-text": true,
+        "on-click": "~/.config/waybar/niri-tab-action.sh close 5",
+        "on-scroll-up": "niri msg action focus-column-left",
+        "on-scroll-down": "niri msg action focus-column-right"
     },
     // macOS Apple-menu equivalent: click the Arch logo for a system menu.
     "custom/archmenu": {
@@ -43,7 +356,7 @@
             "about": "foot --app-id=arch-about-float --window-size-chars=100x40 -e sh -c 'fastfetch; echo; echo \"Press any key to close...\"; read -n1 -s'",
             "settings": "xfce4-settings-manager",
             "updates": "foot --app-id=arch-about-float --window-size-chars=100x40 -e sh -c 'checkupdates || echo \"System is up to date.\"; echo; echo \"Press any key to close...\"; read -n1 -s'",
-            "lock": "swaylock -f -c 282c34",
+            "lock": "hyprlock",
             "logout": "niri msg action quit",
             "sleep": "systemctl suspend",
             "reboot": "systemctl reboot",
@@ -55,35 +368,28 @@
     "custom/overview": {
         "format": "󰀻",
         "tooltip": false,
-        "on-click": "niri msg action toggle-overview"
+        "on-click": "niri msg action toggle-overview",
+        "on-scroll-up": "niri msg action focus-workspace-up",
+        "on-scroll-down": "niri msg action focus-workspace-down"
     },
     "custom/launcher": {
         "format": "",
         "tooltip": false,
         "on-click": "fuzzel"
     },
-    // Two columns, two rows: cpu/memory stacked in one column, disk/temp in
-    // the other, so the whole group stays narrow instead of running wide.
+    // Performance metrics: single horizontal row
     "group/performance": {
         "orientation": "horizontal",
-        "modules": ["group/perf-col1", "group/perf-col2"]
-    },
-    "group/perf-col1": {
-        "orientation": "vertical",
-        "modules": ["cpu", "memory"]
-    },
-    "group/perf-col2": {
-        "orientation": "vertical",
-        "modules": ["disk", "temperature"]
+        "modules": ["cpu", "memory", "disk", "temperature"]
     },
     "cpu": {
         "interval": 2,
-        "format": "󰌓 {usage}%",
+        "format": "<span font_weight='normal'>󰌓</span> {usage}%",
         "tooltip": false,
         "on-click": "foot --app-id=btop-float -e btop"
     },
     "memory": {
-        "format": "󰍛 {percentage}%",
+        "format": "<span font_weight='normal'>󰍛</span> {percentage}%",
         "tooltip": false,
         "on-click": "foot --app-id=btop-float -e btop"
     },
@@ -91,27 +397,21 @@
         // Root is backed by the machine's NVMe drive; show used space.
         "path": "/",
         "interval": 60,
-        "format": "󰋊 {percentage_used}%",
+        "format": "<span font_weight='normal'>󰋊</span> {percentage_used}%",
         "tooltip": false,
         "on-click": "foot --app-id=btop-float -e btop"
     },
     "temperature": {
         "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
         "critical-threshold": 90,
-        "format": "󰔏 {temperatureC}°",
+        "format": "<span font_weight='normal'>󰔏</span> {temperatureC}°",
         "tooltip": false,
         "on-click": "foot --app-id=btop-float -e btop"
     },
 
-    // Claude Code rate-limit budgets, stacked like perf-col: 5h over 7d.
-    // Each row is itself two modules (percentage, reset countdown) because
-    // waybar's custom-module JSON text doesn't render Pango markup, so
-    // dimming just the countdown needs its own CSS class, not inline markup.
-    // Values come from a cache file that ~/.claude/statusline-command.sh
-    // writes on every active session -- there's no standalone command to
-    // query current usage, so this just reflects the last session update.
+    // Claude Code rate-limit budgets: single horizontal row (5h and 7d side-by-side)
     "group/claude": {
-        "orientation": "vertical",
+        "orientation": "horizontal",
         "modules": ["group/claude-5h", "group/claude-7d"]
     },
     "group/claude-5h": {
@@ -123,28 +423,28 @@
         "modules": ["custom/claude-7d-pct", "custom/claude-7d-reset"]
     },
     "custom/claude-5h-pct": {
-        "exec": "waybar-claude-limits 5h pct",
+        "exec": "/home/yesvus/.local/bin/waybar-claude-limits 5h pct",
         "interval": 5,
         "return-type": "json",
         "tooltip": false,
         "on-click": "foot -D $HOME -e claude"
     },
     "custom/claude-5h-reset": {
-        "exec": "waybar-claude-limits 5h reset",
+        "exec": "/home/yesvus/.local/bin/waybar-claude-limits 5h reset",
         "interval": 5,
         "return-type": "json",
         "tooltip": false,
         "on-click": "foot -D $HOME -e claude"
     },
     "custom/claude-7d-pct": {
-        "exec": "waybar-claude-limits 7d pct",
+        "exec": "/home/yesvus/.local/bin/waybar-claude-limits 7d pct",
         "interval": 5,
         "return-type": "json",
         "tooltip": false,
         "on-click": "foot -D $HOME -e claude"
     },
     "custom/claude-7d-reset": {
-        "exec": "waybar-claude-limits 7d reset",
+        "exec": "/home/yesvus/.local/bin/waybar-claude-limits 7d reset",
         "interval": 5,
         "return-type": "json",
         "tooltip": false,
@@ -173,8 +473,8 @@
     },
 
     "pulseaudio": {
-        "format": "{icon} {volume}%",
-        "format-muted": "󰖁 muted",
+        "format": "<span font_weight='normal'>{icon}</span> {volume}%",
+        "format-muted": "<span font_weight='normal'>󰖁</span> muted",
         "format-icons": {
             "default": ["󰕿", "󰖀", "󰕾"]
         },
@@ -190,14 +490,14 @@
         "modules": ["custom/nightlight", "custom/brightness-ddc"]
     },
     "custom/brightness-ddc": {
-        "exec": "sway-brightness-ddc show",
+        "exec": "/home/yesvus/.local/bin/sway-brightness-ddc show",
         "interval": 1,
-        "format": "󰃟 {}%",
+        "format": "<span font_weight='normal'>󰃟</span> {}%",
         "tooltip": false,
-        "on-click": "sway-brightness-ddc bump +5",
-        "on-click-right": "sway-brightness-ddc bump -5",
-        "on-scroll-up": "sway-brightness-ddc bump +5",
-        "on-scroll-down": "sway-brightness-ddc bump -5"
+        "on-click": "/home/yesvus/.local/bin/sway-brightness-ddc bump +5",
+        "on-click-right": "/home/yesvus/.local/bin/sway-brightness-ddc bump -5",
+        "on-scroll-up": "/home/yesvus/.local/bin/sway-brightness-ddc bump +5",
+        "on-scroll-down": "/home/yesvus/.local/bin/sway-brightness-ddc bump -5"
     },
     // Static button: click toggles wlsunset's forced day/night state (same
     // USR1 signal as $mod+Shift+n).
@@ -210,7 +510,7 @@
     // waybar-battery collapse this widget away entirely while on AC, instead
     // of always showing a percentage that isn't relevant when plugged in.
     "custom/battery": {
-        "exec": "waybar-battery",
+        "exec": "/home/yesvus/.local/bin/waybar-battery",
         "interval": 30,
         "return-type": "json",
         "tooltip": false,

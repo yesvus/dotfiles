@@ -52,6 +52,15 @@ button {
     border-radius: 0;
 }
 
+/* Exception to the blanket reset above: the archmenu popup (a real GtkMenu,
+   spawned in this same process/screen) should stay rounded. Belongs here,
+   not just gtk-3.0/gtk.css, because that blanket "* { border-radius: 0; }"
+   is loaded by waybar itself and was winning over the separate file. */
+menu,
+menu decoration {
+    border-radius: 7px;
+}
+
 /* ONE rule for inter-module spacing: every module that appears directly in
    modules-left/center/right gets exactly the same padding, top/bottom
    included. Nothing nested inside a group should carry its own outer
@@ -60,22 +69,26 @@ button {
 #custom-archmenu,
 #custom-launcher,
 #workspacesview,
-#clock,
+#niritabs,
 #claude,
 #performance,
 #connectivity,
 #pulseaudio,
 #lighting,
-#custom-battery {
+#custom-battery,
+#clock {
     padding: 1px 10px;
 }
 
 /* Everything nested inside a group: no outer padding of its own. Small
    gaps between siblings inside a group come from the group's own
    "spacing" property in config.jsonc, not from CSS padding here. */
-#custom-workspaces,
+#workspaces,
 #custom-overview,
 #window,
+#custom-wincount,
+#custom-win-maximize,
+#custom-win-close,
 #cpu,
 #memory,
 #disk,
@@ -91,19 +104,251 @@ button {
     padding: 0;
 }
 
-/* niri-workspaces-rs colors each bar itself via inline Pango spans, so this
-   is just baseline layout -- no color/background needed here. */
-#custom-workspaces {
+/* Native niri workspaces styling */
+#workspaces {
     background-color: transparent;
+}
+
+#workspaces button {
+    background-color: transparent;
+    color: rgba(222, 222, 222, 0.35);
+    padding: 0 4px;
+    font-size: 8pt;
+}
+
+#workspaces button.active,
+#workspaces button.focused {
+    color: #dedede;
 }
 
 #workspacesview {
     background-color: transparent;
 }
 
-#window {
+/* Floating Window Pill */
+#windowpill {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 13px;
+    padding: 0 6px;
+    margin: 1px 4px;
+}
+
+#windowpill:hover {
+    background-color: rgba(255, 255, 255, 0.09);
+}
+
+window#waybar.empty #windowpill {
+    opacity: 0;
+}
+
+/* ==========================================================================
+   Interactive Firefox-style Tabs (Seamless pill with integrated close button)
+   ========================================================================== */
+#niritabs {
     background-color: transparent;
-    color: #dedede;
+}
+
+/* Pagination arrows: icon only, no button box */
+#custom-page-prev,
+#custom-page-next {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0 5px;
+    margin: 0;
+    font-size: 9pt;
+    font-weight: normal;
+    color: rgba(222, 222, 222, 0.35);
+    transition: all 150ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#custom-page-prev:hover,
+#custom-page-next:hover {
+    color: #ffffff;
+}
+
+/* Reserved space disabled state: invisible to prevent layout shifts */
+#custom-page-prev.disabled,
+#custom-page-prev.disabled *,
+#custom-page-next.disabled,
+#custom-page-next.disabled *,
+#custom-fade-left.disabled,
+#custom-fade-left.disabled *,
+#custom-fade-right.disabled,
+#custom-fade-right.disabled *,
+#custom-page-prev.disabled:hover,
+#custom-page-prev.disabled:hover *,
+#custom-page-next.disabled:hover,
+#custom-page-next.disabled:hover *,
+#custom-fade-left.disabled:hover,
+#custom-fade-right.disabled:hover {
+    opacity: 0;
+    color: transparent;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* Tab slots (group/tab-N): outer group spacing */
+#tab-0, #tab-1, #tab-2, #tab-3, #tab-4, #tab-5 {
+    background-color: transparent;
+    margin: 1px 1px;
+}
+
+/* Tab body: The full Firefox tab pill (single container) */
+#custom-tab-0, #custom-tab-1, #custom-tab-2,
+#custom-tab-3, #custom-tab-4, #custom-tab-5 {
+    min-width: 60px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 1px 20px 1px 7px;
+    font-size: 8pt;
+    font-weight: normal;
+    color: rgba(222, 222, 222, 0.70);
+    transition: background-color 150ms cubic-bezier(0.215, 0.61, 0.355, 1),
+                border-color 150ms cubic-bezier(0.215, 0.61, 0.355, 1),
+                color 150ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+/* Tab body padding variants based on active buttons */
+#custom-tab-0.no-buttons, #custom-tab-1.no-buttons, #custom-tab-2.no-buttons,
+#custom-tab-3.no-buttons, #custom-tab-4.no-buttons, #custom-tab-5.no-buttons {
+    padding: 1px 8px 1px 8px;
+}
+
+#custom-tab-0.has-close-only, #custom-tab-1.has-close-only, #custom-tab-2.has-close-only,
+#custom-tab-3.has-close-only, #custom-tab-4.has-close-only, #custom-tab-5.has-close-only {
+    padding: 1px 20px 1px 7px;
+}
+
+#custom-tab-0.has-maximize-only, #custom-tab-1.has-maximize-only, #custom-tab-2.has-maximize-only,
+#custom-tab-3.has-maximize-only, #custom-tab-4.has-maximize-only, #custom-tab-5.has-maximize-only {
+    padding: 1px 20px 1px 7px;
+}
+
+#custom-tab-0.has-both-buttons, #custom-tab-1.has-both-buttons, #custom-tab-2.has-both-buttons,
+#custom-tab-3.has-both-buttons, #custom-tab-4.has-both-buttons, #custom-tab-5.has-both-buttons {
+    padding: 1px 36px 1px 7px;
+}
+
+/* Overflow scroll fade indicators at ends of scroll area (right of <, left of >) */
+#custom-fade-left {
+    background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.08) 100%);
+    min-width: 18px;
+    margin: 1px 1px;
+    padding: 0;
+    border-radius: 6px;
+    transition: background 150ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#custom-fade-right {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+    min-width: 18px;
+    margin: 1px 1px;
+    padding: 0;
+    border-radius: 6px;
+    transition: background 150ms cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#custom-fade-left:hover {
+    background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.18) 100%);
+}
+
+#custom-fade-right:hover {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.18) 0%, transparent 100%);
+}
+
+/* Tab body hover: entire tab highlights as one single unit */
+#custom-tab-0:hover, #custom-tab-1:hover, #custom-tab-2:hover,
+#custom-tab-3:hover, #custom-tab-4:hover, #custom-tab-5:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+/* Active tab state: entire tab pill illuminates with Niri ease-out-cubic */
+#custom-tab-0.active, #custom-tab-1.active, #custom-tab-2.active,
+#custom-tab-3.active, #custom-tab-4.active, #custom-tab-5.active {
+    background-color: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+    font-weight: normal;
+    font-size: 8pt;
+}
+
+/* Maximize / Enlarge button (optional CSD button) */
+#custom-tab-maximize-0, #custom-tab-maximize-1, #custom-tab-maximize-2,
+#custom-tab-maximize-3, #custom-tab-maximize-4, #custom-tab-maximize-5 {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    margin-left: -19px;
+    margin-right: 0px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 0 2px;
+    min-width: 14px;
+    min-height: 14px;
+    font-size: 8pt;
+    font-weight: normal;
+    color: rgba(222, 222, 222, 0.40);
+    transition: background-color 120ms ease, color 120ms ease;
+}
+
+#custom-tab-maximize-0.active, #custom-tab-maximize-1.active, #custom-tab-maximize-2.active,
+#custom-tab-maximize-3.active, #custom-tab-maximize-4.active, #custom-tab-maximize-5.active {
+    color: rgba(255, 255, 255, 0.60);
+}
+
+#custom-tab-maximize-0:hover, #custom-tab-maximize-1:hover, #custom-tab-maximize-2:hover,
+#custom-tab-maximize-3:hover, #custom-tab-maximize-4:hover, #custom-tab-maximize-5:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+}
+
+#custom-tab-maximize-0.with-close, #custom-tab-maximize-1.with-close, #custom-tab-maximize-2.with-close,
+#custom-tab-maximize-3.with-close, #custom-tab-maximize-4.with-close, #custom-tab-maximize-5.with-close {
+    margin-left: -35px;
+    margin-right: 2px;
+}
+
+/* Close button: sits INSIDE the tab at the right end (like Firefox) */
+#custom-tab-close-0, #custom-tab-close-1, #custom-tab-close-2,
+#custom-tab-close-3, #custom-tab-close-4, #custom-tab-close-5 {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    margin-left: -19px;
+    margin-right: 0px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 0 3px;
+    min-width: 14px;
+    min-height: 14px;
+    font-size: 8.5pt;
+    font-weight: normal;
+    color: rgba(222, 222, 222, 0.40);
+    transition: background-color 120ms ease, color 120ms ease;
+}
+
+#custom-tab-close-0.active, #custom-tab-close-1.active, #custom-tab-close-2.active,
+#custom-tab-close-3.active, #custom-tab-close-4.active, #custom-tab-close-5.active {
+    color: rgba(255, 255, 255, 0.60);
+}
+
+/* Close button hover: small rounded square highlight inside the tab */
+#custom-tab-close-0:hover, #custom-tab-close-1:hover, #custom-tab-close-2:hover,
+#custom-tab-close-3:hover, #custom-tab-close-4:hover, #custom-tab-close-5:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+}
+
+#custom-tab-close-0.with-maximize, #custom-tab-close-1.with-maximize, #custom-tab-close-2.with-maximize,
+#custom-tab-close-3.with-maximize, #custom-tab-close-4.with-maximize, #custom-tab-close-5.with-maximize {
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 /* font-weight: normal here on purpose -- Symbols Nerd Font Mono (where
@@ -139,14 +384,14 @@ button {
     padding: 0 2px;
 }
 
-/* Performance: 2 columns x 2 rows (cpu/memory, disk/temperature), sharing
-   one flat block so the group stays narrow. Small font + tight line
-   padding so each row is compact instead of oversized. */
+/* Performance: single horizontal row with uniform 6px intra-group spacing */
 #performance {
     background-color: transparent;
 }
 
-#perf-col1 {
+#cpu,
+#memory,
+#disk {
     margin-right: 6px;
 }
 
@@ -155,63 +400,60 @@ button {
 #disk,
 #temperature {
     background-color: transparent;
-    font-size: 6pt;
+    font-size: 8pt;
     min-height: 0;
-}
-
-/* Monochrome -- these used to be color-coded per metric (blue/cyan/purple/
-   orange), which read as "colorful" against the rest of the flat theme.
-   Only the genuine alert state (critical temperature) keeps a color. */
-#cpu,
-#memory,
-#disk,
-#temperature {
     color: #dedede;
 }
 
 #temperature.critical {
-    color: #fa5750;
+    color: #f7768e;
 }
 
-/* Claude rate limits: same 2-row compact treatment as perf-col, colored
-   by budget remaining (green/yellow/red) instead of a fixed hue. Each row
-   is a pct module + a reset module glued together (no gap between them,
-   padding lives on the outer edges only) so "5h 78%(3h55m)" reads as one
-   unit instead of two separate blocks. */
+/* Claude rate limits: single horizontal row with 5h and 7d side-by-side */
 #claude {
     background-color: transparent;
+}
+
+#claude-5h {
+    margin-right: 6px;
 }
 
 #custom-claude-5h-pct,
 #custom-claude-7d-pct {
     background-color: transparent;
-    font-size: 6pt;
+    font-size: 8pt;
     min-height: 0;
     color: #dedede;
 }
 
 #custom-claude-5h-pct.warning,
 #custom-claude-7d-pct.warning {
-    color: #dbb32d;
+    color: #e0af68;
 }
 
 #custom-claude-5h-pct.critical,
 #custom-claude-7d-pct.critical {
-    color: #fa5750;
+    color: #f7768e;
 }
 
 #custom-claude-5h-reset,
 #custom-claude-7d-reset {
     background-color: transparent;
-    font-size: 6pt;
+    font-size: 8pt;
     min-height: 0;
-    color: #72898f;
+    color: #a9b1d6;
+    margin-left: 2px;
 }
 
 /* Bigger than the default -- an icon-only glyph needs more size than text
-   to actually read clearly at this bar height. */
+   to actually read clearly at this bar height. Icon-only (no combined text,
+   unlike cpu/memory/disk/temperature/pulseaudio/battery/brightness), so a
+   plain font-weight:normal is correct here -- no span-split needed. Same
+   underlying reason as all of those: Symbols Nerd Font Mono has no bold
+   face, confirmed for every glyph in this config on 2026-09-04. */
 #network {
     font-size: 12pt;
+    font-weight: normal;
 }
 
 /* Volume: flat, icon/text color only -- no fill block. */
@@ -249,29 +491,42 @@ button {
     background-color: transparent;
 }
 
+/* Icon-only: Symbols Nerd Font Mono has no bold face, so this stays
+   font-weight:normal (see #custom-archmenu above for the tofu/synthetic-bold
+   bug that forces this) -- the size bump is purely to compensate visually
+   for the lighter stroke next to the bold-800 glyphs elsewhere on the bar. */
 #custom-nightlight {
     margin-right: 6px;
+    font-weight: normal;
+    font-size: 10pt;
 }
 
-#custom-nightlight,
+/* Brightness: the icon in the format string carries its own
+   <span font_weight='normal'> (same reason as #custom-nightlight -- no bold
+   face for this glyph), but the "N%" text uses JetBrainsMono, which DOES
+   have a real bold face, so this selector is left at the inherited
+   font-weight:800 to match the rest of the bar. */
 #custom-brightness-ddc {
     background-color: transparent;
     color: #dedede;
 }
 
 /* Battery: flat, color only shifts on warning/critical (a real status
-   signal, kept -- everything else in the bar dropped color fills). */
+   signal, kept -- everything else in the bar dropped color fills). Icon
+   weight is handled in waybar-battery's own <span> now, same split as
+   #custom-brightness-ddc, so the "N%" text here stays bold like the rest
+   of the bar. */
 #custom-battery {
     background-color: transparent;
     color: #dedede;
 }
 
 #custom-battery.warning {
-    color: #dbb32d;
+    color: #e0af68;
 }
 
 #custom-battery.critical {
-    color: #fa5750;
+    color: #f7768e;
 }
 
 #clock {
