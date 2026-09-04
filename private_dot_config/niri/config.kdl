@@ -408,6 +408,12 @@ window-rule {
     default-column-width { proportion 0.66667; }
 }
 
+// Default terminal: open at 1/3 of the screen width.
+window-rule {
+    match app-id=r#"^Alacritty$"#
+    default-column-width { proportion 0.33333; }
+}
+
 // xfce4-settings-manager and all of its sub-dialogs (Appearance, Displays,
 // Keyboard, Mouse, etc. -- each opens as its own separate app-id).
 window-rule {
