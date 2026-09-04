@@ -5,6 +5,15 @@ dynamic_padding = true
 # No client-side decorations, matches ghostty's window-decoration=false (niri tiles it)
 decorations = "None"
 
+# Send a literal newline (not carriage-return) on Shift+Enter, since
+# alacritty doesn't negotiate the kitty keyboard protocol like foot/ghostty
+# do -- Claude Code (and similar CLIs) need this to insert a newline
+# instead of submitting.
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\n"
+
 [font]
 normal = { family = "JetBrainsMono Nerd Font Mono", style = "Medium" }
 bold = { family = "JetBrainsMono Nerd Font Mono", style = "Bold" }
