@@ -1,16 +1,32 @@
-/* Back to one font everywhere (JetBrainsMono Nerd Font Mono) -- the clock
-   stayed monospace for the no-jitter fix, and mixing it with Inter
-   elsewhere just looked inconsistent. */
+/* One font everywhere -- the clock stayed monospace for the no-jitter fix,
+   and mixing it with Inter elsewhere just looked inconsistent. */
 * {
     font-family: "JetBrainsMono Nerd Font Mono", "Symbols Nerd Font Mono";
-    font-weight: bold;
+    font-weight: 800;
     font-size: 9pt;
     min-height: 0;
     margin: 0;
 }
 
+/* "Liquid glass": translucent instead of a flat gradient, backed by real
+   compositor blur (see the waybar layer-rule in niri's config.kdl) --
+   without that blur rule this just looks like a dim, slightly see-through
+   bar, since GTK/CSS alone can't blur what's behind the window. */
 window#waybar {
-    background-color: #181818;
+    background-color: rgba(24, 24, 24, 0.55);
+    color: #dedede;
+}
+
+/* GTK tooltip popups -- unstyled by default, they were using the plain
+   light Adwaita tooltip theme, clashing hard with the dark bar. */
+tooltip {
+    background-color: rgba(28, 28, 28, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+tooltip label {
     color: #dedede;
 }
 
@@ -26,69 +42,112 @@ button {
     min-width: 0;
 }
 
-/* Flat, square blocks: padding only, no margin, no border-radius, so
-   widgets sit flush against each other with zero gap.
+/* Flat, square blocks: no margin, no border-radius, so widgets sit flush
+   against each other with zero gap.
    NOTE: a "group/foo" module's CSS node is #foo (the part after the slash),
    NOT #group-foo -- that wrong prefix is why every group background was
    silently failing to paint until now. */
-#workspaces button,
-#mode,
-#window,
-#performance,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#connectivity,
-#network,
-#tray,
-#pulseaudio,
-#lighting,
-#custom-brightness-ddc,
-#custom-nightlight,
-#custom-battery,
-#clock {
-    padding: 0 8px;
+* {
     margin: 0;
     border-radius: 0;
 }
 
-#workspaces button {
+/* ONE rule for inter-module spacing: every module that appears directly in
+   modules-left/center/right gets exactly the same padding, top/bottom
+   included. Nothing nested inside a group should carry its own outer
+   padding -- that was causing the compounding (group padding + child
+   padding stacking) behind the uneven gaps between modules. */
+#custom-archmenu,
+#custom-launcher,
+#workspacesview,
+#clock,
+#claude,
+#performance,
+#connectivity,
+#pulseaudio,
+#lighting,
+#custom-battery {
+    padding: 1px 10px;
+}
+
+/* Everything nested inside a group: no outer padding of its own. Small
+   gaps between siblings inside a group come from the group's own
+   "spacing" property in config.jsonc, not from CSS padding here. */
+#custom-workspaces,
+#custom-overview,
+#window,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#network,
+#tray,
+#custom-brightness-ddc,
+#custom-nightlight,
+#custom-claude-5h-pct,
+#custom-claude-5h-reset,
+#custom-claude-7d-pct,
+#custom-claude-7d-reset {
+    padding: 0;
+}
+
+/* niri-workspaces-rs colors each bar itself via inline Pango spans, so this
+   is just baseline layout -- no color/background needed here. */
+#custom-workspaces {
     background-color: transparent;
-    color: #777777;
 }
 
-#workspaces button.focused {
-    background-color: #4695f7;
-    color: #181818;
-}
-
-#workspaces button.urgent {
-    background-color: #fa5750;
-    color: #181818;
-}
-
-#mode {
-    background-color: #dbb32d;
-    color: #181818;
+#workspacesview {
+    background-color: transparent;
 }
 
 #window {
     background-color: transparent;
-    color: #b9b9b9;
+    color: #dedede;
+}
+
+/* font-weight: normal here on purpose -- Symbols Nerd Font Mono (where
+   these icon glyphs actually come from) has no bold variant, so the
+   global font-weight:800 was forcing GTK to synthetically embolden these
+   specific glyphs, which is what was producing the stray artifact/"dot"
+   on the Arch icon regardless of which glyph we used. */
+#custom-archmenu {
+    background-color: transparent;
+    color: #dedede;
+    font-size: 10pt;
+    font-weight: normal;
+}
+
+#custom-overview {
+    background-color: transparent;
+    color: #dedede;
+    font-size: 8pt;
+    font-weight: normal;
+    /* Consistent with other intra-group spacing across the bar (e.g. #network, #custom-nightlight, #perf-col1) */
+    margin-right: 6px;
+}
+
+#custom-launcher {
+    background-color: transparent;
+    color: #dedede;
+    font-size: 9pt;
+    font-weight: normal;
+}
+
+
+#window box {
+    padding: 0 2px;
 }
 
 /* Performance: 2 columns x 2 rows (cpu/memory, disk/temperature), sharing
    one flat block so the group stays narrow. Small font + tight line
    padding so each row is compact instead of oversized. */
 #performance {
-    background-color: #252525;
-    padding: 0;
+    background-color: transparent;
 }
 
-#perf-col1,
-#perf-col2 {
-    padding: 0 2px;
+#perf-col1 {
+    margin-right: 6px;
 }
 
 #cpu,
@@ -96,25 +155,18 @@ button {
 #disk,
 #temperature {
     background-color: transparent;
-    padding: 0 4px;
     font-size: 6pt;
     min-height: 0;
 }
 
-#cpu {
-    color: #4695f7;
-}
-
-#memory {
-    color: #41c7b9;
-}
-
-#disk {
-    color: #af88eb;
-}
-
+/* Monochrome -- these used to be color-coded per metric (blue/cyan/purple/
+   orange), which read as "colorful" against the rest of the flat theme.
+   Only the genuine alert state (critical temperature) keeps a color. */
+#cpu,
+#memory,
+#disk,
 #temperature {
-    color: #ed8649;
+    color: #dedede;
 }
 
 #temperature.critical {
@@ -127,22 +179,15 @@ button {
    padding lives on the outer edges only) so "5h 78%(3h55m)" reads as one
    unit instead of two separate blocks. */
 #claude {
-    background-color: #252525;
-    padding: 0;
-}
-
-#claude-5h,
-#claude-7d {
-    padding: 0;
+    background-color: transparent;
 }
 
 #custom-claude-5h-pct,
 #custom-claude-7d-pct {
     background-color: transparent;
-    padding: 0 0 0 4px;
     font-size: 6pt;
     min-height: 0;
-    color: #75b938;
+    color: #dedede;
 }
 
 #custom-claude-5h-pct.warning,
@@ -158,7 +203,6 @@ button {
 #custom-claude-5h-reset,
 #custom-claude-7d-reset {
     background-color: transparent;
-    padding: 0 4px 0 3px;
     font-size: 6pt;
     min-height: 0;
     color: #72898f;
@@ -168,31 +212,27 @@ button {
    to actually read clearly at this bar height. */
 #network {
     font-size: 12pt;
-    padding: 0 6px;
 }
 
-/* Volume: its own blue block, same size as everything else now. */
+/* Volume: flat, icon/text color only -- no fill block. */
 #pulseaudio {
-    padding: 0 8px;
-    background-color: #4695f7;
-    color: #181818;
-}
-
-#pulseaudio.muted {
-    background-color: #3b3b3b;
+    background-color: transparent;
     color: #dedede;
 }
 
-/* Network icon + tray share one block (both connectivity-related). Neutral
-   gray instead of a color fill, so the icon reads soft/muted like the tray's
-   own monochrome network icon next to it, instead of standing out. */
+#pulseaudio.muted {
+    color: #777777;
+}
+
+/* Network icon + tray share one block, flattened to match the rest. */
 #connectivity {
-    background-color: #252525;
+    background-color: transparent;
 }
 
 #network {
     background-color: transparent;
-    color: #b9b9b9;
+    color: #dedede;
+    margin-right: 6px;
 }
 
 /* Differentiated by icon glyph (crossed-out wifi), not color. */
@@ -202,36 +242,39 @@ button {
 
 #tray {
     background-color: transparent;
-    padding: 0 6px 0 0;
 }
 
-/* Night light + brightness share one yellow block (both are light
-   controls). */
+/* Night light + brightness share one block, flat, icon color only. */
 #lighting {
-    background-color: #dbb32d;
-    padding: 0;
+    background-color: transparent;
+}
+
+#custom-nightlight {
+    margin-right: 6px;
 }
 
 #custom-nightlight,
 #custom-brightness-ddc {
     background-color: transparent;
-    color: #181818;
+    color: #dedede;
 }
 
+/* Battery: flat, color only shifts on warning/critical (a real status
+   signal, kept -- everything else in the bar dropped color fills). */
 #custom-battery {
-    background-color: #75b938;
-    color: #181818;
+    background-color: transparent;
+    color: #dedede;
 }
 
 #custom-battery.warning {
-    background-color: #dbb32d;
+    color: #dbb32d;
 }
 
 #custom-battery.critical {
-    background-color: #fa5750;
+    color: #fa5750;
 }
 
 #clock {
-    background-color: #252525;
+    background-color: transparent;
     color: #dedede;
 }

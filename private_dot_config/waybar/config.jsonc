@@ -3,33 +3,65 @@
     "position": "top",
     // Tall enough to fit the 2-row performance group; other single-line
     // modules just center vertically within the extra room.
-    "height": 24,
+    "height": 26,
     "spacing": 0,
 
-    "modules-left": ["sway/workspaces", "sway/mode"],
-    "modules-center": ["sway/window"],
+    "modules-left": ["custom/archmenu", "custom/launcher", "group/workspacesview"],
+    "modules-center": ["clock"],
     "modules-right": [
         "group/claude",
         "group/performance",
         "group/connectivity",
         "pulseaudio",
         "group/lighting",
-        "custom/battery",
-        "clock"
+        "custom/battery"
     ],
 
-    "sway/workspaces": {
-        "disable-scroll": true,
-        "all-outputs": false
+    // Workspace view icon + the workspace/window indicator, merged into one
+    // visual block.
+    "group/workspacesview": {
+        "orientation": "horizontal",
+        "modules": ["custom/overview", "custom/workspaces"]
     },
-    "sway/mode": {
-        "format": "  {}  "
+    // Event-driven workspace+window indicator (niri-workspaces-rs by
+    // 1jehuang -- github.com/1jehuang/niri-workspaces-rs). Each window is
+    // its own colored bar, app-aware; replaces the separate niri/workspaces
+    // + windowdots-script combo with one properly integrated view.
+    "custom/workspaces": {
+        "exec": "~/.config/waybar/niri-workspaces",
+        "return-type": "json",
+        "format": "{}",
+        "tooltip": false
     },
-    "sway/window": {
-        "format": "{title}",
-        "max-length": 60
+    // macOS Apple-menu equivalent: click the Arch logo for a system menu.
+    "custom/archmenu": {
+        "format": "",
+        "tooltip": false,
+        "menu": "on-click",
+        "menu-file": "/home/yesvus/.config/waybar/arch-menu.xml",
+        "menu-actions": {
+            "about": "foot --app-id=arch-about-float --window-size-chars=100x40 -e sh -c 'fastfetch; echo; echo \"Press any key to close...\"; read -n1 -s'",
+            "settings": "xfce4-settings-manager",
+            "updates": "foot --app-id=arch-about-float --window-size-chars=100x40 -e sh -c 'checkupdates || echo \"System is up to date.\"; echo; echo \"Press any key to close...\"; read -n1 -s'",
+            "lock": "swaylock -f -c 282c34",
+            "logout": "niri msg action quit",
+            "sleep": "systemctl suspend",
+            "reboot": "systemctl reboot",
+            "shutdown": "systemctl poweroff"
+        }
     },
-
+    // Mouse-friendly overview launcher (niri's overview shortcut is Mod+O;
+    // this replaces the removed top-left hot corner as a click target).
+    "custom/overview": {
+        "format": "󰀻",
+        "tooltip": false,
+        "on-click": "niri msg action toggle-overview"
+    },
+    "custom/launcher": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "fuzzel"
+    },
     // Two columns, two rows: cpu/memory stacked in one column, disk/temp in
     // the other, so the whole group stays narrow instead of running wide.
     "group/performance": {
@@ -46,24 +78,28 @@
     },
     "cpu": {
         "interval": 2,
-        "format": "󰌓{usage}%",
+        "format": "󰌓 {usage}%",
+        "tooltip": false,
         "on-click": "foot --app-id=btop-float -e btop"
     },
     "memory": {
-        "format": "󰍛{percentage}%",
+        "format": "󰍛 {percentage}%",
+        "tooltip": false,
         "on-click": "foot --app-id=btop-float -e btop"
     },
     "disk": {
         // Root is backed by the machine's NVMe drive; show used space.
         "path": "/",
         "interval": 60,
-        "format": "󰋊{percentage_used}%",
+        "format": "󰋊 {percentage_used}%",
+        "tooltip": false,
         "on-click": "foot --app-id=btop-float -e btop"
     },
     "temperature": {
         "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
         "critical-threshold": 90,
-        "format": "󰔏{temperatureC}°",
+        "format": "󰔏 {temperatureC}°",
+        "tooltip": false,
         "on-click": "foot --app-id=btop-float -e btop"
     },
 
@@ -90,24 +126,28 @@
         "exec": "waybar-claude-limits 5h pct",
         "interval": 5,
         "return-type": "json",
+        "tooltip": false,
         "on-click": "foot -D $HOME -e claude"
     },
     "custom/claude-5h-reset": {
         "exec": "waybar-claude-limits 5h reset",
         "interval": 5,
         "return-type": "json",
+        "tooltip": false,
         "on-click": "foot -D $HOME -e claude"
     },
     "custom/claude-7d-pct": {
         "exec": "waybar-claude-limits 7d pct",
         "interval": 5,
         "return-type": "json",
+        "tooltip": false,
         "on-click": "foot -D $HOME -e claude"
     },
     "custom/claude-7d-reset": {
         "exec": "waybar-claude-limits 7d reset",
         "interval": 5,
         "return-type": "json",
+        "tooltip": false,
         "on-click": "foot -D $HOME -e claude"
     },
 
@@ -124,9 +164,7 @@
         "format-wifi": "󰖩",
         "format-ethernet": "",
         "format-disconnected": "󰖪",
-        "tooltip-format-wifi": "{essid} ({signalStrength}%) -- {ifname}: {ipaddr}/{cidr}",
-        "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr}",
-        "tooltip-format-disconnected": "Disconnected",
+        "tooltip": false,
         "on-click": "nm-connection-editor"
     },
     "tray": {
@@ -140,6 +178,7 @@
         "format-icons": {
             "default": ["󰕿", "󰖀", "󰕾"]
         },
+        "tooltip": false,
         // Waybar's own scroll step, separate from the wpctl keybinds in sway
         // config (both now move volume by 5%, not the 1% default).
         "scroll-step": 5,
@@ -154,6 +193,7 @@
         "exec": "sway-brightness-ddc show",
         "interval": 1,
         "format": "󰃟 {}%",
+        "tooltip": false,
         "on-click": "sway-brightness-ddc bump +5",
         "on-click-right": "sway-brightness-ddc bump -5",
         "on-scroll-up": "sway-brightness-ddc bump +5",
@@ -163,7 +203,7 @@
     // USR1 signal as $mod+Shift+n).
     "custom/nightlight": {
         "format": "󰖔",
-        "tooltip-format": "Toggle night light (wlsunset)",
+        "tooltip": false,
         "on-click": "pkill -USR1 -x wlsunset"
     },
     // Custom instead of the built-in battery module: hide-when-empty lets
@@ -173,11 +213,13 @@
         "exec": "waybar-battery",
         "interval": 30,
         "return-type": "json",
+        "tooltip": false,
         "hide-when-empty": true
     },
 
     "clock": {
         "interval": 1,
-        "format": "{:%a %b %d, %H:%M:%S}"
+        "format": "{:%a %b %d, %H:%M:%S}",
+        "tooltip": false
     }
 }
