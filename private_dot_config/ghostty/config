@@ -21,7 +21,9 @@ theme = light:Atom One Light,dark:Atom One Dark
 confirm-close-surface = false
 
 # Reuse a single running ghostty process for new windows -> near-instant launch
+# for argument-less spawns (only helps when invoked with no CLI args).
 gtk-single-instance = true
+quit-after-last-window-closed-delay = 5s
 
 # Niri handles all tiling/window management, so kill ghostty's native
 # split and tab features (and their keybinds) to avoid conflicts.

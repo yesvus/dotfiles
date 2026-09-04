@@ -1,0 +1,42 @@
+[window]
+padding = { x = 5, y = 5 }
+# No client-side decorations, matches ghostty's window-decoration=false (niri tiles it)
+decorations = "None"
+
+[font]
+normal = { family = "JetBrainsMono Nerd Font Mono", style = "Medium" }
+bold = { family = "JetBrainsMono Nerd Font Mono", style = "Bold" }
+size = 10.5
+
+[cursor]
+style = { shape = "Beam", blinking = "On" }
+blink_interval = 750
+blink_timeout = 0
+
+[colors.primary]
+background = "#282c34"
+foreground = "#abb2bf"
+
+[colors.cursor]
+text = "#282c34"
+cursor = "#61afef"
+
+[colors.normal]
+black   = "#282c34"
+red     = "#e06c75"
+green   = "#98c379"
+yellow  = "#e5c07b"
+blue    = "#61afef"
+magenta = "#c678dd"
+cyan    = "#56b6c2"
+white   = "#abb2bf"
+
+[colors.bright]
+black   = "#545862"
+red     = "#e06c75"
+green   = "#98c379"
+yellow  = "#e5c07b"
+blue    = "#61afef"
+magenta = "#c678dd"
+cyan    = "#56b6c2"
+white   = "#ffffff"
