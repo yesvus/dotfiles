@@ -13,15 +13,10 @@ flag like `-e` is passed — confirmed by watching PIDs). alacritty has no
 native split/tab system to fight with niri over either. ghostty is left
 configured and installed for manual/occasional use only.
 
-- [ ] `waybar/config.jsonc` still spawns `foot` directly for several widgets
-      (system info/about, updates, btop floats x4, quick-claude floats x4).
-      Decide whether to move these to `alacritty` for consistency — this is
-      easier than the old ghostty plan since alacritty has a direct
-      `--class=<name>` flag (ghostty has no equivalent), so the matching
-      niri window rule for `arch-about-float` (currently keyed off foot's
-      `--app-id`) can carry over with just `--class` instead.
-- [ ] `zed/tasks.json` "Open in foot" task — same call: keep on foot or
-      switch to alacritty.
+- [x] `waybar/config.jsonc` migrated to spawn `alacritty` for all widgets
+      (system info/about, updates, btop floats x4, quick-claude floats x4)
+      using `--class` to preserve niri window-rules.
+- [x] `zed/tasks.json` "Open in alacritty" task — migrated to alacritty.
 - [ ] Decide whether `foot` stays installed as a fallback/lightweight
       terminal or gets fully retired once the above are migrated.
 - [ ] `~/.config/ghostty/config` is still fully set up (theme, no tab
