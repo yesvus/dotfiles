@@ -353,9 +353,9 @@
         "menu": "on-click",
         "menu-file": "/home/yesvus/.config/waybar/arch-menu.xml",
         "menu-actions": {
-            "about": "foot --app-id=arch-about-float --window-size-chars=100x40 -e sh -c 'fastfetch; echo; echo \"Press any key to close...\"; read -n1 -s'",
+            "about": "footclient --app-id=arch-about-float --window-size-chars=100x40 -e sh -c 'fastfetch; echo; echo \"Press any key to close...\"; read -n1 -s'",
             "settings": "xfce4-settings-manager",
-            "updates": "foot --app-id=arch-about-float --window-size-chars=100x40 -e sh -c 'checkupdates || echo \"System is up to date.\"; echo; echo \"Press any key to close...\"; read -n1 -s'",
+            "updates": "footclient --app-id=arch-about-float --window-size-chars=100x40 -e sh -c 'checkupdates || echo \"System is up to date.\"; echo; echo \"Press any key to close...\"; read -n1 -s'",
             "lock": "hyprlock",
             "logout": "niri msg action quit",
             "sleep": "systemctl suspend",
@@ -386,12 +386,12 @@
         "interval": 2,
         "format": "<span font_weight='normal'>󰌓</span> {usage}%",
         "tooltip": false,
-        "on-click": "foot --app-id=btop-float -e btop"
+        "on-click": "footclient --app-id=btop-float -e btop"
     },
     "memory": {
         "format": "<span font_weight='normal'>󰍛</span> {percentage}%",
         "tooltip": false,
-        "on-click": "foot --app-id=btop-float -e btop"
+        "on-click": "footclient --app-id=btop-float -e btop"
     },
     "disk": {
         // Root is backed by the machine's NVMe drive; show used space.
@@ -399,14 +399,14 @@
         "interval": 60,
         "format": "<span font_weight='normal'>󰋊</span> {percentage_used}%",
         "tooltip": false,
-        "on-click": "foot --app-id=btop-float -e btop"
+        "on-click": "footclient --app-id=btop-float -e btop"
     },
     "temperature": {
         "hwmon-path": "/sys/class/hwmon/hwmon4/temp1_input",
         "critical-threshold": 90,
         "format": "<span font_weight='normal'>󰔏</span> {temperatureC}°",
         "tooltip": false,
-        "on-click": "foot --app-id=btop-float -e btop"
+        "on-click": "footclient --app-id=btop-float -e btop"
     },
 
     // Claude Code rate-limit budgets: single horizontal row (5h and 7d side-by-side)
@@ -427,28 +427,28 @@
         "interval": 5,
         "return-type": "json",
         "tooltip": false,
-        "on-click": "foot -D $HOME -e claude"
+        "on-click": "footclient -D $HOME -e claude"
     },
     "custom/claude-5h-reset": {
         "exec": "/home/yesvus/.local/bin/waybar-claude-limits 5h reset",
         "interval": 5,
         "return-type": "json",
         "tooltip": false,
-        "on-click": "foot -D $HOME -e claude"
+        "on-click": "footclient -D $HOME -e claude"
     },
     "custom/claude-7d-pct": {
         "exec": "/home/yesvus/.local/bin/waybar-claude-limits 7d pct",
         "interval": 5,
         "return-type": "json",
         "tooltip": false,
-        "on-click": "foot -D $HOME -e claude"
+        "on-click": "footclient -D $HOME -e claude"
     },
     "custom/claude-7d-reset": {
         "exec": "/home/yesvus/.local/bin/waybar-claude-limits 7d reset",
         "interval": 5,
         "return-type": "json",
         "tooltip": false,
-        "on-click": "foot -D $HOME -e claude"
+        "on-click": "footclient -D $HOME -e claude"
     },
 
     // Network icon + tray (nm-applet's own network entry, etc.) sharing one
